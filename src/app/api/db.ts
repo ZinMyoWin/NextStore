@@ -8,7 +8,12 @@ export async function connectToDB() {
     return { client: cachedClient, db: cachedDb };
   }
 
+  if (!process.env.MONGODB_USER || !process.env.MONGODB_PASSWORD) {
+    throw new Error("Missing MONGODB_USER or MONGODB_PASSWORD environment variables");
+  }
+
   const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@mernapp.sses4.mongodb.net/?retryWrites=true&w=majority&appName=MERNapp`;
+  const dbName = process.env.MONGODB_DB || "ecommerce";
 
   const client = new MongoClient(uri, {
     serverApi: {
@@ -21,7 +26,7 @@ export async function connectToDB() {
   try {
     await client.connect();
     cachedClient = client;
-    cachedDb = client.db("ecommerce");
+    cachedDb = client.db(dbName);
     return { client, db: cachedDb };
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
