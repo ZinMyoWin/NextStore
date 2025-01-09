@@ -9,8 +9,8 @@ export default async function ProductsPage(){
     const cart = await response2.json();
 
     return (
-    <div>
-        <h1>Products Page</h1>
+    <div className="w-fit ml-auto mr-auto mt-4 ">
+        <h1 className="text-xl font-semibold">Products</h1>
 
         <ProductsList products={products} initialCart = {cart}/>
     </div>

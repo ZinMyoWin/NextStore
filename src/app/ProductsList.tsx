@@ -3,6 +3,8 @@ import { Product } from "./product-data";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import AddToCart from "./ui/components/Button";
+
 export default function ProductsList({
   products,
   initialCart = [],
@@ -12,6 +14,7 @@ export default function ProductsList({
 }) {
   const [cart, setCart] = useState(initialCart);
 
+  // Add to cart 
   async function addToCart(productId: string) {
     const response = await fetch(
       process.env.NEXT_PUBLIC_SITE_URL + "/api/users/2/cart",
@@ -26,10 +29,11 @@ export default function ProductsList({
     setCart(updatedCart);
   }
 
-  function prooductIsInCart(productId: string) {
+  function productIsInCart(productId: string) {
     return cart.some((cartItem) => cartItem.id === productId);
   }
 
+  // Remove From Cart
   async function removeFromCart(productId: string) {
     const response = await fetch(
       process.env.NEXT_PUBLIC_SITE_URL + "/api/users/2/cart",
@@ -46,44 +50,25 @@ export default function ProductsList({
   }
 
   return (
-    <div className='flex flex-row flex-wrap justify-center space-x-4 space-y-4'>
+    <div className='grid grid-cols-3 w-full justify-center gap-12 justify-items-center'>
       {products.map((product) => (
         <Link
           key={product.id}
           href={`/products/` + product.id}
-          className='w-fit flex flex-row md:flex-row space-x-4 p-4 border border-gray-200 rounded-md shadow-md hover:shadow-lg cursor-pointer'
+          className='grid auto-rows-auto rounded-md w-fit cursor-pointer'
           passHref
         >
-          <div className=''>
-            <Image
-              src={"/" + product.imageUrl}
-              alt='product-image'
-              width={300}
-              height={300}
-            ></Image>
-          </div>
-          <div className=''>
-            <h3 className='text-2xl font-bold '>{product.name}</h3>
-            <div className='text-blue-600 text-xl'>${product.price}</div>
-            {prooductIsInCart(product.id) ? (
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  removeFromCart(product.id);
-                }}
-              >
-                Remove from cart
-              </button>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToCart(product.id);
-                }}
-              >
-                Add to cart
-              </button>
-            )}
+          <Image
+            src={"/productsImage/" + product.imageUrl}
+            alt='product-image'
+            width={339.61}
+            height={286.48}
+          ></Image>
+          <div className='h-fit gap-2 flex flex-col items-start'>
+            <h3 className='text-sm font-bold '>{product.name}</h3>
+            <p className='text-sm'>${product.shortDescription}</p>
+            <h2 className='text-3xl font-bold'>${product.price}</h2>
+            <AddToCart productId={product.id} productIsInCart={productIsInCart} removeFromCart={removeFromCart} addToCart={addToCart}/>
           </div>
         </Link>
       ))}

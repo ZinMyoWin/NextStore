@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./Navbar";
-
-
+import Navbar from "./ui/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,10 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-      >
-        <Navbar/>
+    <html lang='en'>
+      <body className="flex flex-col items-center justify-center m-0">
+        <Navbar />
         {children}
       </body>
     </html>
