@@ -1,19 +1,42 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "../product-data";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function ShoppingCart({
-  initalCartProducts,
-}: {
-  initalCartProducts: Product[];
-}) {
-  const [cartProducts, setCartProducts] = useState(initalCartProducts);
+export default function ShoppingCart() {
+  const [cartProducts, setCartProducts] = useState<Product[]>([]);
+
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    async function fetchUserSession() {
+      const response = await fetch("/api/auth/session");
+      const session = await response.json();
+
+      if (session?.user?.id) {
+        setUserId(session.user.id);
+      }
+    }
+
+    fetchUserSession();
+  }, []);
+
+  useEffect(() => {
+    async function fetchCart() {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
+        { cache: "no-cache" }
+      );
+      const cart = await response.json();
+      setCartProducts(cart);
+      console.log("Cart", cart);
+    }
+    fetchCart();
+  }, [userId]);
 
   async function removeFromCart(productId: string) {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_SITE_URL + "/api/users/2/cart",
+      process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
       {
         method: "DELETE",
         body: JSON.stringify({ productId }),
@@ -26,10 +49,8 @@ export default function ShoppingCart({
     setCartProducts(updatedCart);
   }
   return (
-    <div className={`${cartProducts.length > 0 ? "w-fit" : "w-9/12"} mt-4 `}>
-      <h1 className='w-full text-start text-xl font-semibold'>
-        Carts
-      </h1>
+    <div className={`${cartProducts.length > 0 ? "w-fit " : "w-9/12"} mt-4 `}>
+      <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
       <div className='grid grid-cols-3 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
         {cartProducts.map((product) => (
           <Link

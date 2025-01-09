@@ -2,22 +2,43 @@
 import { Product } from "./product-data";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddToCart from "./ui/components/Button";
 
-export default function ProductsList({
-  products,
-  initialCart = [],
-}: {
-  products: Product[];
-  initialCart: Product[];
-}) {
-  const [cart, setCart] = useState(initialCart);
+export default function ProductsList({ products }: { products: Product[] }) {
+  const [cart, setCart] = useState<Product[]>([]);
 
-  // Add to cart 
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    async function fetchUserSession() {
+      const response = await fetch("/api/auth/session", { cache: "no-store" });
+      const session = await response.json();
+
+      if (session?.user?.id) {
+        setUserId(session.user.id);
+      }
+    }
+
+    fetchUserSession();
+  }, []);
+
+  useEffect(() => {
+    async function fetchCart() {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
+        { cache: "no-cache" }
+      );
+      const cart = await response.json();
+      setCart(cart)
+      console.log("Cart", cart);
+    }
+    fetchCart();
+  }, [userId]);
+
+  // Add to cart
   async function addToCart(productId: string) {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_SITE_URL + "/api/users/2/cart",
+      process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
       {
         method: "POST",
         body: JSON.stringify({ productId }),
@@ -36,7 +57,7 @@ export default function ProductsList({
   // Remove From Cart
   async function removeFromCart(productId: string) {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_SITE_URL + "/api/users/2/cart",
+      process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
       {
         method: "DELETE",
         body: JSON.stringify({ productId }),
@@ -68,7 +89,12 @@ export default function ProductsList({
             <h3 className='text-sm font-bold '>{product.name}</h3>
             <p className='text-sm'>${product.shortDescription}</p>
             <h2 className='text-3xl font-bold'>${product.price}</h2>
-            <AddToCart productId={product.id} productIsInCart={productIsInCart} removeFromCart={removeFromCart} addToCart={addToCart}/>
+            <AddToCart
+              productId={product.id}
+              productIsInCart={productIsInCart}
+              removeFromCart={removeFromCart}
+              addToCart={addToCart}
+            />
           </div>
         </Link>
       ))}

@@ -29,11 +29,13 @@ export async function GET(
   }
 
   const cartIds = shoppingCart.cartIds;
+  console.log("Card Ids: ", cartIds)
   const productsInCart = await db
     .collection("products")
     .find({ id: { $in: cartIds } })
     .toArray();
 
+  console.log("Product In Cart: ", productsInCart);
   return new Response(JSON.stringify(productsInCart), {
     status: 200,
     headers: {
