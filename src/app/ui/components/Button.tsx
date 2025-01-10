@@ -1,5 +1,6 @@
 "use client";
-import { signInWithGoogle } from "@/app/actions";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Define the Session type
 type User = {
@@ -30,14 +31,24 @@ export default function AddToCart({
   removeFromCart,
   addToCart,
 }: cartItemProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
   // Function to check authentication before adding to cart
   function checkAuthentication(productId: string) {
     if (session?.user) {
       // User is authenticated, add to cart
-      addToCart(productId);
+      setIsLoading(true);
+      try {
+        addToCart(productId);
+      } catch (error) {
+        console.error("Failed to add to cart:", error);
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       // User is not authenticated, redirect to sign-in
-      signInWithGoogle();
+      router.push("/auth/signin");
     }
   }
 
@@ -49,7 +60,7 @@ export default function AddToCart({
             e.preventDefault();
             removeFromCart(productId);
           }}
-          className="bg-red-500 p-2 text-sm text-white rounded-md"
+          className='bg-red-500 p-2 text-sm text-white rounded-md'
         >
           Remove from cart
         </button>
@@ -59,9 +70,10 @@ export default function AddToCart({
             e.preventDefault();
             checkAuthentication(productId);
           }}
-          className="bg-blue-500 p-2 text-sm text-white rounded-md"
+          className='bg-blue-500 p-2 text-sm text-white rounded-md'
+          disabled={isLoading}
         >
-          Add to cart
+          {isLoading ? "Adding..." : "Add to cart"}
         </button>
       )}
     </>
