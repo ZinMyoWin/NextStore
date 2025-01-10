@@ -5,16 +5,32 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import AddToCart from "./ui/components/Button";
 
+// Define the Session type
+type User = {
+  id: string;
+  name?: string;
+  email?: string;
+  image?: string;
+};
+
+type Session = {
+  user?: User;
+  expires?: string;
+};
+
 export default function ProductsList({ products }: { products: Product[] }) {
   const [cart, setCart] = useState<Product[]>([]);
+  // State to store the session data
+  const [session, setSession] = useState<Session | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const [userId, setUserId] = useState(null);
   useEffect(() => {
     async function fetchUserSession() {
       const response = await fetch("/api/auth/session", { cache: "no-store" });
       const session = await response.json();
 
       if (session?.user?.id) {
+        setSession(session);
         setUserId(session.user.id);
       }
     }
@@ -29,7 +45,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
         { cache: "no-cache" }
       );
       const cart = await response.json();
-      setCart(cart)
+      setCart(cart);
       console.log("Cart", cart);
     }
     fetchCart();
@@ -85,11 +101,13 @@ export default function ProductsList({ products }: { products: Product[] }) {
             width={339.61}
             height={286.48}
           ></Image>
+
           <div className='h-fit gap-2 flex flex-col items-start'>
             <h3 className='text-sm font-bold '>{product.name}</h3>
             <p className='text-sm'>${product.shortDescription}</p>
             <h2 className='text-3xl font-bold'>${product.price}</h2>
             <AddToCart
+              session={session}
               productId={product.id}
               productIsInCart={productIsInCart}
               removeFromCart={removeFromCart}
