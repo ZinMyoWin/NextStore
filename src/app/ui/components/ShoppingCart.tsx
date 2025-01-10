@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Product } from "../../product-data";
 import Link from "next/link";
 import Image from "next/image";
-import SignIn from "../../../../components/sign-in";
+// import SignIn from "@/app/auth/signin/sign-in";
 
 // Define the Session type
 type User = {
@@ -121,11 +121,7 @@ export default function ShoppingCart() {
 
   // Display a message if the user is not logged in
   if (!session?.user) {
-    return (
-      <div className="">
-        Login to view the Cart.
-      </div>
-    );
+    return <div className=''>Login to view the Cart.</div>;
   }
   // Render the shopping cart UI
   return (
