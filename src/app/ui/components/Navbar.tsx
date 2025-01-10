@@ -6,7 +6,7 @@ import SignOut from "../../../../components/sing-out";
 
 export default async function Navbar() {
   const session = await auth();
-  console.log(session);
+  console.log("Session in Navbar.tsx",session);
   return (
     <div className='w-full bg-blue-500 grid grid-cols-1 justify-items-center'>
       <div className="w-10/12 flex flex-row justify-between items-center p-5">
