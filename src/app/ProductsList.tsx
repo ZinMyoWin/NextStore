@@ -87,7 +87,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
   }
 
   return (
-    <div className='grid grid-cols-3 w-full justify-center gap-12 justify-items-center'>
+    <div className='grid grid-cols-3 w-full justify-center gap-12'>
       {products.map((product) => (
         <Link
           key={product.id}

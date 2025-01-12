@@ -117,15 +117,15 @@ export default function ShoppingCart() {
   }
 
   // Display a loading message while data is being fetched
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className='h-screen'>Loading...</div>;
 
   // Display a message if the user is not logged in
   if (!session?.user) {
-    return <div className=''>Login to view the Cart.</div>;
+    return <div className='h-screen'>Login to view the Cart.</div>;
   }
   // Render the shopping cart UI
   return (
-    <div className={`${cartProducts.length > 0 ? "w-fit " : "w-9/12"} mt-4 `}>
+    <div className={`${cartProducts.length > 0 ? "w-full " : "w-9/12"} mt-4 h-screen`}>
       <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
       <div className='grid grid-cols-3 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
         {/* Map through the cart products and render each product */}

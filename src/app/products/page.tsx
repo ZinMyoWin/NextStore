@@ -6,7 +6,7 @@ export default async function ProductsPage(){
     const products = await response.json();
     
     return (
-    <div className="w-fit ml-auto mr-auto mt-4 ">
+    <div className=" mt-4 ">
         <h1 className="text-xl font-semibold">Products</h1>
 
         <ProductsList products={products}/>
