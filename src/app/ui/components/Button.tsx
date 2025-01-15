@@ -1,81 +1,105 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-// Define the Session type
-type User = {
-  id: string;
-  name?: string;
-  email?: string;
-  image?: string;
-};
-
-type Session = {
-  user?: User;
-  expires?: string;
-};
+import { motion } from "motion/react";
 
 // Define the props type for AddToCart
 type cartItemProps = {
-  session: Session | null; // Session can be null
   productId: string;
-  productIsInCart: (productId: string) => boolean;
   removeFromCart: (productId: string) => void;
-  addToCart: (productId: string) => void;
+  checkAuthentication: (productId: string) => void;
+  isInCart: boolean;
+  isLoading: boolean;
 };
 
 export default function AddToCart({
-  session,
-  productId,
-  productIsInCart,
+  isInCart,
   removeFromCart,
-  addToCart,
+  checkAuthentication,
+  productId,
+  isLoading,
 }: cartItemProps) {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
   // Function to check authentication before adding to cart
-  function checkAuthentication(productId: string) {
-    if (session?.user) {
-      // User is authenticated, add to cart
-      setIsLoading(true);
-      try {
-        addToCart(productId);
-      } catch (error) {
-        console.error("Failed to add to cart:", error);
-      } finally {
-        setIsLoading(false);
-      }
+
+  function handleOnClick() {
+    if (isInCart) {
+      removeFromCart(productId);
     } else {
-      // User is not authenticated, redirect to sign-in
-      router.push("/auth/signin");
+      checkAuthentication(productId);
     }
   }
 
   return (
     <>
-      {productIsInCart(productId) ? (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            removeFromCart(productId);
-          }}
-          className='bg-red-500 p-2 text-sm text-white rounded-md'
-        >
-          Remove from cart
-        </button>
-      ) : (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            checkAuthentication(productId);
-          }}
-          className='bg-blue-500 p-2 text-sm text-white rounded-md'
-          disabled={isLoading}
-        >
-          {isLoading ? "Adding..." : "Add to cart"}
-        </button>
-      )}
+      <motion.button
+        initial={{
+          opacity: 0,
+          x: 10,
+        }}
+        animate={{
+          opacity: 1,
+          x: 0,
+        }}
+        whileHover={{ opacity: 0.7, scale: 1.03 }}
+        transition={{
+          type: "spring",
+          bounce: 0.25,
+        }}
+        whileTap={{
+          scale: 0.7,
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          handleOnClick();
+        }}
+        className={`${
+          isInCart ? "bg-red-500" : "bg-blue-500"
+        } p-2 text-sm text-white rounded-md`}
+      >
+        {isLoading ? "Loading" : isInCart ? "Remove from cart" : "Add to cart"}
+      </motion.button>
     </>
   );
 }
+
+type removeFromCartItemProps = {
+  productId: string;
+  removeFromCart: (productId: string) => void;
+
+  isLoading: boolean;
+};
+
+export const RemoveCartBtn = ({
+  productId,
+
+  removeFromCart,
+  isLoading,
+}: removeFromCartItemProps) => {
+  return (
+    <>
+      <motion.button
+        initial={{
+          opacity: 0,
+          x: 10,
+        }}
+        animate={{
+          opacity: 1,
+          x: 0,
+        }}
+        whileHover={{ opacity: 0.7, scale: 1.03 }}
+        transition={{
+          type: "spring",
+          bounce: 0.25,
+        }}
+        whileTap={{
+          scale: 0.7,
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          removeFromCart(productId);
+        }}
+        className={`${"bg-red-500"} p-2 text-sm text-white rounded-md`}
+      >
+        {isLoading ? "Loading" : "Remove from cart"}
+      </motion.button>
+    </>
+  );
+};
