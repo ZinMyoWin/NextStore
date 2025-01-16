@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "motion/react";
-
+import notInCart from "../../../../public/icons/cart-unfilled.svg";
+import inCart from "../../../../public/icons/cart-filled.svg";
+import Image from "next/image";
 // Define the props type for AddToCart
 type cartItemProps = {
   productId: string;
@@ -29,7 +31,7 @@ export default function AddToCart({
 
   return (
     <>
-      <motion.button
+      <motion.div
         initial={{
           opacity: 0,
           x: 10,
@@ -50,12 +52,16 @@ export default function AddToCart({
           e.preventDefault();
           handleOnClick();
         }}
-        className={`${
-          isInCart ? "bg-red-500" : "bg-blue-500"
-        } p-2 text-sm text-white rounded-md`}
+        className={``}
       >
-        {isLoading ? "Loading" : isInCart ? "Remove from cart" : "Add to cart"}
-      </motion.button>
+        {isLoading ? (
+          "Loading"
+        ) : isInCart ? (
+          <Image src={inCart} alt='in cart' width={35} height={35} />
+        ) : (
+          <Image src={notInCart} alt='notInCart' width={35} height={35} />
+        )}
+      </motion.div>
     </>
   );
 }
@@ -96,9 +102,12 @@ export const RemoveCartBtn = ({
           e.preventDefault();
           removeFromCart(productId);
         }}
-        className={`${"bg-red-500"} p-2 text-sm text-white rounded-md`}
       >
-        {isLoading ? "Loading" : "Remove from cart"}
+        {isLoading ? (
+          "Loading"
+        ) : (
+          <Image src={inCart} alt='in cart' width={35} height={35} />
+        )}
       </motion.button>
     </>
   );

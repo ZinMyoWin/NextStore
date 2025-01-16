@@ -23,7 +23,7 @@ export default function ShoppingCart() {
   }
   // Render the shopping cart UI
   return (
-    <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-screen`}>
+    <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-full`}>
       <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
       <div className='grid grid-cols-3 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
         {/* Map through the cart products and render each product */}
