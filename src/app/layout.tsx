@@ -16,9 +16,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className='flex'>
         <Sidebar />
-        <main className='flex-1 p-4 ml-64'>
-          {" "}
-          {/* Add ml-64 to account for the sidebar width */}
+        <main className='flex-1 p-4 ml-52 bg-background'>
           {children}
         </main>
       </body>

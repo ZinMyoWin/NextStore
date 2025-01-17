@@ -6,30 +6,30 @@ export default async function Sidebar() {
   console.log("Session in Sidebar.tsx", session);
 
   return (
-    <div className='w-64 bg-blue-500 h-screen fixed left-0 top-0'>
-      <div className='p-5'>
-        <h1 className='text-2xl font-extrabold text-white mb-8'>NexE</h1>
-        <nav>
-          <ul className='flex flex-col space-y-4 font-semibold text-white'>
+    <div className='w-52 bg-primary text-background h-screen fixed left-0 top-0 shadow-lg shadow-black'>
+      <div className='p-4'>
+        <h1 className='text-2xl font-extrabold mb-8'>NexE</h1>
+        <nav className="w-full mt-2">
+          <ul className='flex flex-col space-y-2 font-semibold  hover:*:bg-secondary *:p-2 hover:*:text-text hover:*:rounded-sm hover:*:transition-all hover:*:ease-in-out hover:*:duration-700'>
             <li>
-              <Link href='/' className='hover:text-blue-200'>Home</Link>
+              <Link href='/' className=''>Home</Link>
             </li>
             <li>
-              <Link href='/products' className='hover:text-blue-200'>Products</Link>
+              <Link href='/products' className=''>Products</Link>
             </li>
             <li>
-              <Link href='/cart' className='hover:text-blue-200'>Cart</Link>
+              <Link href='/cart' className=''>Cart</Link>
             </li>
             {/* <li>
-              <Link href='/checkout' className='hover:text-blue-200'>CheckOut</Link>
+              <Link href='/checkout' className=''>CheckOut</Link>
             </li> */}
             {session?.user ? (
               <li>
-                <Link href='/auth/signout' className='hover:text-blue-200'>Sign Out</Link>
+                <Link href='/auth/signout' className=''>Sign Out</Link>
               </li>
             ) : (
               <li>
-                <Link href='/auth/signin' className='hover:text-blue-200'>Sign In</Link>
+                <Link href='/auth/signin' className=''>Sign In</Link>
               </li>
             )}
           </ul>

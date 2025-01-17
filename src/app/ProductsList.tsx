@@ -17,7 +17,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
         <Link
           key={product.id}
           href={`/products/` + product.id}
-          className='grid auto-rows-auto rounded-md w-fit cursor-pointer'
+          className='grid auto-rows-auto rounded-sm w-fit cursor-pointer'
           passHref
         >
           <Image
@@ -29,7 +29,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
 
           <div className='h-fit gap-2 flex flex-col items-start'>
             <h3 className='text-sm font-bold '>{product.name}</h3>
-            <p className='text-sm'>${product.shortDescription}</p>
+            <p className='text-sm'>{product.shortDescription}</p>
             <h2 className='text-3xl font-bold'>${product.price}</h2>
             <AddToCart
             isInCart = {productIsInCart(product.id)}

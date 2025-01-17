@@ -40,7 +40,7 @@ export default function AddToCart({
           opacity: 1,
           x: 0,
         }}
-        whileHover={{ opacity: 0.7, scale: 1.03 }}
+        whileHover={{ scale: 1.03 }}
         transition={{
           type: "spring",
           bounce: 0.25,

@@ -1,21 +1,23 @@
+/* Color Link*/
+/* https://www.realtimecolors.com/?colors=212529-F8F9FA-212529-E9ECEF-343A40&fonts=Inter-Inter */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --text: #212529;
+    --background: #f8f9fa;
+    --primary: #212529;
+    --secondary: #e9ecef;
+    --accent: #343a40;
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  .dark {
+    --text: #d5d9dd;
+    --background: #040506;
+    --primary: #d5d9dd;
+    --secondary: #0f1215;
+    --accent: #bec4ca;
+  }
 }
