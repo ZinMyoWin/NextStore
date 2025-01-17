@@ -5,8 +5,6 @@ import Image from "next/image";
 import AddToCart from "./ui/components/Button";
 import useCart from "./hooks/useCart";
 
-
-
 export default function ProductsList({ products }: { products: Product[] }) {
   
   const {productIsInCart, removeFromCart, checkAuthentication, isLoading } = useCart();
