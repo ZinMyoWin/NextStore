@@ -10,7 +10,7 @@ export default async function Sidebar() {
       <div className='p-4'>
         <h1 className='text-2xl font-extrabold mb-8'>NexE</h1>
         <nav className="w-full mt-2">
-          <ul className='flex flex-col space-y-2 font-semibold  hover:*:bg-secondary *:p-2 hover:*:text-text hover:*:rounded-sm hover:*:transition-all hover:*:ease-in-out hover:*:duration-700'>
+          <ul className='flex flex-col space-y-2 font-semibold  hover:*:bg-accent *:p-2 *:rounded-sm'>
             <li>
               <Link href='/' className=''>Home</Link>
             </li>
