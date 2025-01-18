@@ -9,7 +9,6 @@ type cartItemProps = {
   removeFromCart: (productId: string) => void;
   checkAuthentication: (productId: string) => void;
   isInCart: boolean;
-  isLoading: boolean;
 };
 
 export default function AddToCart({
@@ -17,7 +16,6 @@ export default function AddToCart({
   removeFromCart,
   checkAuthentication,
   productId,
-  isLoading,
 }: cartItemProps) {
   // Function to check authentication before adding to cart
 
@@ -54,9 +52,7 @@ export default function AddToCart({
         }}
         className={``}
       >
-        {isLoading ? (
-          "Loading"
-        ) : isInCart ? (
+        {isInCart ? (
           <Image src={inCart} alt='in cart' width={35} height={35} />
         ) : (
           <Image src={notInCart} alt='notInCart' width={35} height={35} />
@@ -69,15 +65,12 @@ export default function AddToCart({
 type removeFromCartItemProps = {
   productId: string;
   removeFromCart: (productId: string) => void;
-
-  isLoading: boolean;
 };
 
 export const RemoveCartBtn = ({
   productId,
 
   removeFromCart,
-  isLoading,
 }: removeFromCartItemProps) => {
   return (
     <>
@@ -103,11 +96,7 @@ export const RemoveCartBtn = ({
           removeFromCart(productId);
         }}
       >
-        {isLoading ? (
-          "Loading"
-        ) : (
-          <Image src={inCart} alt='in cart' width={35} height={35} />
-        )}
+        <Image src={inCart} alt='in cart' width={35} height={35} />
       </motion.button>
     </>
   );

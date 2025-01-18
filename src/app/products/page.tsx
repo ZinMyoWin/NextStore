@@ -4,6 +4,8 @@ import PageTransition from "../ui/animations/pageTransition";
 export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
+
+  
   const response = await fetch(
     process.env.NEXT_PUBLIC_SITE_URL + "/api/product"
   );
