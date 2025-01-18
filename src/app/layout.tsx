@@ -14,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className='flex'>
+      <body className='flex bg-background'>
         <Sidebar />
-        <main className='flex-1 p-4 ml-52 bg-background'>
+        <main className='flex-1 p-4 ml-52'>
           {children}
         </main>
       </body>

@@ -4,10 +4,26 @@ import useCart from "@/app/hooks/useCart";
 
 import PageTransition from "../animations/pageTransition";
 import ProductCard from "./ProductCard";
+import { useEffect, useState } from "react";
+import { Product } from "@/app/product-data";
 // import SignIn from "@/app/auth/signin/sign-in";
 
 export default function ShoppingCart() {
-  const { session, cart, isLoading } = useCart();
+  const { session, isLoading, userId } = useCart();
+  const [cart, setCart] = useState<Product[]>([]);
+
+  useEffect(() => {
+    async function fetchCart() {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
+        { cache: "no-cache" }
+      );
+      const cart = await response.json();
+      setCart(cart);
+      console.log("Cart", cart);
+    }
+    fetchCart();
+  });
 
   // Display a loading message while data is being fetched
   if (isLoading) return <div className='h-screen'>Loading...</div>;
