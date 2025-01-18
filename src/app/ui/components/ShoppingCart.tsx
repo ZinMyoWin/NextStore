@@ -25,7 +25,7 @@ export default function ShoppingCart() {
   // Render the shopping cart UI
   return (
     <PageTransition>
-    <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-full`}>
+    <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-auto`}>
       <div className="">
         <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
       </div>

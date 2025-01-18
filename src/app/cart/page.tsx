@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export default async function Cart() {
   return (
   
-  <div className="h-full">
+  <div className="h-screen bg-background">
 
     <ShoppingCart />
   </div>
