@@ -15,7 +15,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
         <Link
           key={product.id}
           href={`/products/` + product.id}
-          className='grid auto-rows-auto rounded-xl w-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-500'
+          className='grid auto-rows-auto rounded-xl w-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'
           passHref
         >
           <Image
