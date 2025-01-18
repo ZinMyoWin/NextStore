@@ -23,6 +23,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
             alt='product-image'
             width={279}
             height={286.48}
+            className="justify-self-center"
           ></Image>
 
           <div className='h-fit gap-2 flex flex-col items-start p-2'>
