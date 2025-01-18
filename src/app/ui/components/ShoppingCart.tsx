@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import useCart from "@/app/hooks/useCart";
 import { RemoveCartBtn } from "./Button";
+import PageTransition from "../animations/pageTransition";
 // import SignIn from "@/app/auth/signin/sign-in";
 
 
@@ -23,9 +24,12 @@ export default function ShoppingCart() {
   }
   // Render the shopping cart UI
   return (
+    <PageTransition>
     <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-full`}>
-      <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
-      <div className='grid grid-cols-3 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
+      <div className="">
+        <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
+      </div>
+      <div className='grid grid-cols-4 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
         {/* Map through the cart products and render each product */}
         {cart.map((product) => (
           <Link
@@ -62,5 +66,6 @@ export default function ShoppingCart() {
         ))}
       </div>
     </div>
+    </PageTransition>
   );
 }
