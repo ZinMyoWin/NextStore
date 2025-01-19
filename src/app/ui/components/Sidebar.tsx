@@ -15,17 +15,17 @@ export default async function Sidebar() {
 
   return (
     <div className='w-52 bg-background text-text h-screen fixed left-0 top-0 shadow-lg '>
-      <div className='p-4'>
-        <h1 className='text-2xl font-extrabold mb-8'>NexE</h1>
-        <nav className='w-full mt-2'>
-          <ul className='flex flex-col space-y-2 font-semibold  hover:*:bg-secondary *:p-2 *:rounded-sm '>
+      <div className='p-4 flex flex-col h-screen'>
+        <h1 className='text-2xl font-bold mb-8 px-4 h-1/8'>NexE</h1>
+        <nav className='w-full mt-2 h-auto'>
+          <ul className='flex flex-col space-y-2  hover:*:bg-secondary *:p-2 *:rounded-sm '>
             <li className='gap-2'>
               <Link
                 className='flex flex-row items-center justify-between gap-2'
                 href='/'
               >
                 <Image src={HomeInactive} alt='' className='w-1/4'></Image>
-                <p className='w-3/4 text-lg'>Home</p>
+                <p className='w-3/4 text-[16px]'>Home</p>
               </Link>
             </li>
             <li className='gap-2'>
@@ -34,7 +34,7 @@ export default async function Sidebar() {
                 className='flex flex-row items-center justify-between gap-2 '
               >
                 <Image src={ProductInactive} alt='' className='w-1/4'></Image>
-                <p className='w-3/4 text-lg'>Product</p>
+                <p className='w-3/4 text-[16px]'>Product</p>
               </Link>
             </li>
             <li className='gap-2'>
@@ -43,35 +43,39 @@ export default async function Sidebar() {
                 className='flex flex-row items-center justify-between gap-2   '
               >
                 <Image src={CartInactive} alt='' className='w-1/4'></Image>
-                <p className='w-3/4 text-lg'>Cart</p>
+                <p className='w-3/4 text-[16px]'>Cart</p>
               </Link>
             </li>
             {/* <li>
               <Link href='/checkout' className=''>CheckOut</Link>
             </li> */}
+          </ul>
+        </nav>
+        
+          <div className="flex flex-col space-y-2  hover:*:bg-secondary *:p-2 *:rounded-sm h-full justify-end ">
             {session?.user ? (
-              <li >
+              <div>
                 <Link
                   href='/auth/signout'
                   className='flex flex-row items-center justify-between gap-2'
                 >
                   <Image src={Login} alt='' className='w-1/4'></Image>
-                  <p className='w-3/4 text-lg'>Log Out</p>
+                  <p className='w-3/4 text-[16px]'>Log Out</p>
                 </Link>
-              </li>
+              </div>
             ) : (
-              <li >
+              <div>
                 <Link
                   href='/auth/signin'
                   className='flex flex-row items-center justify-between gap-2 '
                 >
-                  <Image src={Login} alt='' width={30} height={30}></Image>
-                  <p className='w-3/4 text-lg '>Login</p>
+                  <Image src={Login} alt='' className='w-1/4'></Image>
+                  <p className='w-3/4 text-[16px] '>Login</p>
                 </Link>
-              </li>
+              </div>
             )}
-          </ul>
-        </nav>
+          
+        </div>
       </div>
     </div>
   );
