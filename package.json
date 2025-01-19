@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/core": "^0.37.4",
     "@auth/mongodb-adapter": "^3.7.4",
     "init": "^0.1.2",
     "mongodb": "^6.12.0",
