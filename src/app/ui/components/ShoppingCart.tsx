@@ -11,19 +11,27 @@ import { Product } from "@/app/product-data";
 export default function ShoppingCart() {
   const { session, isLoading, userId } = useCart();
   const [cart, setCart] = useState<Product[]>([]);
+  const [cartUpdated, setCartUpdated] = useState(false); // State to track cart updates
+
+  async function fetchCart() {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
+      { cache: "no-cache" }
+    );
+    const cart = await response.json();
+    setCart(cart);
+    console.log("Cart", cart);
+  }
 
   useEffect(() => {
-    async function fetchCart() {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
-        { cache: "no-cache" }
-      );
-      const cart = await response.json();
-      setCart(cart);
-      console.log("Cart", cart);
-    }
+  
     fetchCart();
-  });
+  }, [userId, cartUpdated]);
+
+  // Function to manually refresh the cart
+  const refreshCart = () => {
+    setCartUpdated((prev) => !prev); // Toggle cartUpdated to trigger useEffect
+  };
 
   // Display a loading message while data is being fetched
   if (isLoading) return <div className='h-screen'>Loading...</div>;
@@ -42,7 +50,7 @@ export default function ShoppingCart() {
         <div className='grid grid-cols-4 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
           {/* Map through the cart products and render each product */}
           {cart.map((product) => (
-            <ProductCard key={product.id} {...product} type='cart' />
+            <ProductCard key={product.id} {...product} type='cart' refreshCart ={refreshCart}/>
           ))}
         </div>
       </div>

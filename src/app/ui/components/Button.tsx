@@ -9,6 +9,7 @@ type cartItemProps = {
   removeFromCart: (productId: string) => void;
   checkAuthentication: (productId: string) => void;
   isInCart: boolean;
+  refreshStart: () => void;
 };
 
 export default function AddToCart({
@@ -16,6 +17,7 @@ export default function AddToCart({
   removeFromCart,
   checkAuthentication,
   productId,
+  refreshStart = () => {}
 }: cartItemProps) {
   // Function to check authentication before adding to cart
 
@@ -49,6 +51,7 @@ export default function AddToCart({
         onClick={(e) => {
           e.preventDefault();
           handleOnClick();
+          refreshStart();
         }}
         className={``}
       >
@@ -65,12 +68,13 @@ export default function AddToCart({
 type removeFromCartItemProps = {
   productId: string;
   removeFromCart: (productId: string) => void;
+  refreshStart: ()=> void
 };
 
 export const RemoveCartBtn = ({
   productId,
-
   removeFromCart,
+  refreshStart = () => {}
 }: removeFromCartItemProps) => {
   return (
     <>
@@ -94,6 +98,7 @@ export const RemoveCartBtn = ({
         onClick={(e) => {
           e.preventDefault();
           removeFromCart(productId);
+          refreshStart();
         }}
       >
         <Image src={inCart} alt='in cart' width={35} height={35} />
