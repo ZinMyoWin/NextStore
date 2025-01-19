@@ -11,7 +11,6 @@ import Image from "next/image";
 
 export default async function Sidebar() {
   const session = await auth();
-  console.log("Session in Sidebar.tsx", session);
 
   return (
     <div className='w-52 bg-background text-text h-screen fixed left-0 top-0 shadow-lg '>
