@@ -54,11 +54,11 @@ export default function ShoppingCart() {
   return (
     <RefreshContext.Provider value={refreshCart}>
       <PageTransition>
-        <div className={`${cart.length > 0 ? "w-full" : "w-9/12"} mt-4 h-auto`}>
-          <div className="px-3">
-            <h1 className="w-full text-start text-xl font-semibold">Carts</h1>
-          </div>
-          <div className="grid grid-cols-4 w-full justify-center ml-auto mr-auto gap-12 justify-items-center">
+        <div className={`${cart.length > 0 ? "w-full" : "w-9/12"} mt-1 h-auto`}>
+        <div className="px-2 pt-1">
+          <h1 className='text-2xl font-bold'>Carts</h1>
+        </div>
+          <div className="grid grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center">
             {cart.map((product) => (
               <ProductCard key={product.id} {...product} type="cart" />
             ))}
