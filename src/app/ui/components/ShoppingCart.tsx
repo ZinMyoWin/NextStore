@@ -1,59 +1,70 @@
 "use client";
 
+import React, { createContext, useEffect, useState } from "react";
 import useCart from "@/app/hooks/useCart";
-
 import PageTransition from "../animations/pageTransition";
 import ProductCard from "./ProductCard";
-import { useEffect, useState } from "react";
 import { Product } from "@/app/product-data";
-// import SignIn from "@/app/auth/signin/sign-in";
+
+// Create the RefreshContext
+export const RefreshContext = createContext<() => void>(() => {});
 
 export default function ShoppingCart() {
   const { session, isLoading, userId } = useCart();
   const [cart, setCart] = useState<Product[]>([]);
-  const [cartUpdated, setCartUpdated] = useState(false); // State to track cart updates
+  const [cartUpdated, setCartUpdated] = useState(false);
 
+  // Fetch the cart data
   async function fetchCart() {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
-      { cache: "no-cache" }
-    );
-    const cart = await response.json();
-    setCart(cart);
-    console.log("Cart", cart);
+    if (!userId) return; // Ensure userId is available
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL}/api/users/${userId}/cart`,
+        { cache: "no-cache" }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart");
+      }
+      const cartData = await response.json();
+      setCart(cartData);
+      console.log("Cart", cartData);
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    }
   }
 
+  // Trigger fetchCart when userId or cartUpdated changes
   useEffect(() => {
-  
     fetchCart();
   }, [userId, cartUpdated]);
 
-  // Function to manually refresh the cart
+  // Function to refresh the cart manually
   const refreshCart = () => {
-    setCartUpdated((prev) => !prev); // Toggle cartUpdated to trigger useEffect
+    setCartUpdated((prev) => !prev);
   };
 
-  // Display a loading message while data is being fetched
-  if (isLoading) return <div className='h-screen'>Loading...</div>;
+  // Loading state
+  if (isLoading) return <div className="h-screen">Loading...</div>;
 
-  // Display a message if the user is not logged in
+  // If the user is not logged in
   if (!session?.user) {
-    return <div className='h-screen'>Login to view the Cart.</div>;
+    return <div className="h-screen">Login to view the Cart.</div>;
   }
-  // Render the shopping cart UI
+
   return (
-    <PageTransition>
-      <div className={`${cart.length > 0 ? "w-full " : "w-9/12"} mt-4 h-auto`}>
-        <div className=''>
-          <h1 className='w-full text-start text-xl font-semibold'>Carts</h1>
+    <RefreshContext.Provider value={refreshCart}>
+      <PageTransition>
+        <div className={`${cart.length > 0 ? "w-full" : "w-9/12"} mt-4 h-auto`}>
+          <div className="px-3">
+            <h1 className="w-full text-start text-xl font-semibold">Carts</h1>
+          </div>
+          <div className="grid grid-cols-4 w-full justify-center ml-auto mr-auto gap-12 justify-items-center">
+            {cart.map((product) => (
+              <ProductCard key={product.id} {...product} type="cart" />
+            ))}
+          </div>
         </div>
-        <div className='grid grid-cols-4 w-full justify-center ml-auto mr-auto gap-12 justify-items-center'>
-          {/* Map through the cart products and render each product */}
-          {cart.map((product) => (
-            <ProductCard key={product.id} {...product} type='cart' refreshCart ={refreshCart}/>
-          ))}
-        </div>
-      </div>
-    </PageTransition>
+      </PageTransition>
+    </RefreshContext.Provider>
   );
 }

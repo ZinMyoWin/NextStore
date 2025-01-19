@@ -3,24 +3,29 @@ import { motion } from "motion/react";
 import notInCart from "../../../../public/icons/cart-unfilled.svg";
 import inCart from "../../../../public/icons/cart-filled.svg";
 import Image from "next/image";
+import { useContext } from "react";
+import { RefreshContext } from "./ShoppingCart";
 // Define the props type for AddToCart
 type cartItemProps = {
   productId: string;
   removeFromCart: (productId: string) => void;
   checkAuthentication: (productId: string) => void;
   isInCart: boolean;
-  refreshStart: () => void;
+
 };
+
+
 
 export default function AddToCart({
   isInCart,
   removeFromCart,
   checkAuthentication,
   productId,
-  refreshStart = () => {}
 }: cartItemProps) {
-  // Function to check authentication before adding to cart
 
+
+  const refreshCart = useContext(RefreshContext)
+  // Function to check authentication before adding to cart
   function handleOnClick() {
     if (isInCart) {
       removeFromCart(productId);
@@ -28,6 +33,8 @@ export default function AddToCart({
       checkAuthentication(productId);
     }
   }
+
+
 
   return (
     <>
@@ -51,7 +58,7 @@ export default function AddToCart({
         onClick={(e) => {
           e.preventDefault();
           handleOnClick();
-          refreshStart();
+          refreshCart()
         }}
         className={``}
       >
@@ -68,14 +75,15 @@ export default function AddToCart({
 type removeFromCartItemProps = {
   productId: string;
   removeFromCart: (productId: string) => void;
-  refreshStart: ()=> void
+
 };
 
 export const RemoveCartBtn = ({
   productId,
   removeFromCart,
-  refreshStart = () => {}
 }: removeFromCartItemProps) => {
+
+  const refreshCart = useContext(RefreshContext)
   return (
     <>
       <motion.button
@@ -98,7 +106,7 @@ export const RemoveCartBtn = ({
         onClick={(e) => {
           e.preventDefault();
           removeFromCart(productId);
-          refreshStart();
+          refreshCart()
         }}
       >
         <Image src={inCart} alt='in cart' width={35} height={35} />

@@ -11,7 +11,7 @@ type cartItems = {
   shortDescription: string;
   price: number;
   type: string;
-  refreshCart: ()=> void
+ 
 };
 
 export default function ProductCard({
@@ -21,7 +21,7 @@ export default function ProductCard({
   shortDescription,
   price,
   type,
-  refreshCart
+
 }: cartItems) {
   const { removeFromCart, productIsInCart, checkAuthentication } = useCart();
 
@@ -50,10 +50,10 @@ export default function ProductCard({
               removeFromCart={removeFromCart}
               checkAuthentication={checkAuthentication}
               productId={id}
-              refreshStart = {refreshCart}
+             
             />
           ) : (
-            <RemoveCartBtn productId={id} removeFromCart={removeFromCart}  refreshStart = {refreshCart}/>
+            <RemoveCartBtn productId={id} removeFromCart={removeFromCart}  />
           )}
         </div>
       </div>
