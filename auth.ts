@@ -38,11 +38,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
   adapter: MongoDBAdapter(client) as Adapter,
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
   debug: true,
   callbacks: {
-    async signIn({ user, account } : {user: CustomUser, account: Account | null}) {
+    async signIn({
+      user,
+      account,
+    }: {
+      user: CustomUser;
+      account: Account | null;
+    }) {
       const { db } = await connectToDB();
 
       // Check if the user already exists in the database
@@ -58,13 +64,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           provider: account?.provider,
           providerId: account?.providerAccountId,
           image: user.image,
-          role: "user"
+          role: "user",
         });
         user.id = result.insertedId.toString(); // Attach the MongoDB _id to the user object
-        user.role = "user"
+        user.role = "user";
       } else {
-        user.id = existingUser._id.toString(); // Use the existing user's _id
-        user.role = existingUser.role ?? "user";
+        if (existingUser.role === "admin") {
+          user.id = existingUser._id.toString(); // Use the existing user's _id
+        } else {
+          user.id = existingUser._id.toString(); // Use the existing user's _id
+          user.role = existingUser.role ?? "user";
+        }
       }
 
       console.log("User during sign-in:", user); // Debugging
@@ -76,7 +86,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       console.log("JWT callback triggered"); // Should log
       if (user) {
         token.id = user.id; // Attach user ID to the token
-        token.role = user.role?? "user";
+        if (user.role === "admin") {
+          token.role = user.role ?? "admin";
+        } else {
+          token.role = user.role ?? "user";
+        }
       }
       console.log("Token during JWT callback:", token); // Debugging
       return token;
@@ -90,7 +104,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }) {
       if (token?.id) {
         session.user.id = token.id as string; // Safely attach user ID to the session
-        session.user.role = token.role ?? "user";
+        if (token.role === "admin") {
+          session.user.role = token.role ?? "admin";
+        } else {
+          session.user.role = token.role ?? "user";
+        }
       }
       console.log("Session during session callback:", session); // Debugging
       return session;
