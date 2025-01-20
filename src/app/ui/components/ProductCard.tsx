@@ -2,6 +2,7 @@
 import Image from "next/image";
 import AddToCart, { RemoveCartBtn } from "./Button";
 import Link from "next/link";
+import useCart from "@/app/hooks/useCart";
 // import useCart from "@/app/hooks/useCart";
 
 type cartItems = {
@@ -21,6 +22,7 @@ export default function ProductCard({
   price,
   type,
 }: cartItems) {
+  const { session } = useCart();
   return (
     <Link
       href={`/products/` + _id}
@@ -39,11 +41,15 @@ export default function ProductCard({
         <h3 className='text-sm font-bold '>{name}</h3>
         <p className='text-sm'>{shortDescription}</p>
         <div className='flex flex-row justify-between w-full'>
-          <h2 className='text-3xl font-bold'>${price}</h2>
+          <h2 className='text-3xl font-bold'>{price}</h2>
           {type === "product" ? (
-            <div>
+            session?.user?.role === "admin" ? (
+              <div>
+                {/* Add admin-specific actions here, e.g., edit or delete buttons */}
+              </div>
+            ) : (
               <AddToCart productId={_id} />
-            </div>
+            )
           ) : (
             <RemoveCartBtn productId={_id} />
           )}
