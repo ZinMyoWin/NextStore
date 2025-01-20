@@ -13,7 +13,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
         <ProductCard key={product._id} {...product} type='product' />
       ))}
       {session?.user?.role === "user" && (
-        <div className="w-full p-2 h-72">
+        <div className="w-full p-2 pt-1 pb-3 h-72">
           <Link
             href={"/products/add-product"}
             className='h-full mt-1 hover:bg-accent bg-secondary hover:text-background grid grid-cols-1 justify-items-center items-center border-dashed border-2 border-accent rounded-md group transition-all ease-in-out duration-300 cursor-pointer'
