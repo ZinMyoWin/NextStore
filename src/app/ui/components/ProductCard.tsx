@@ -5,7 +5,7 @@ import Link from "next/link";
 // import useCart from "@/app/hooks/useCart";
 
 type cartItems = {
-  id: string;
+  _id: string;
   imageUrl: string;
   name: string;
   shortDescription: string;
@@ -14,7 +14,7 @@ type cartItems = {
 };
 
 export default function ProductCard({
-  id,
+  _id,
   imageUrl,
   name,
   shortDescription,
@@ -23,7 +23,7 @@ export default function ProductCard({
 }: cartItems) {
   return (
     <Link
-      href={`/products/` + id}
+      href={`/products/` + _id}
       className='grid auto-rows-auto rounded-xl w-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'
       passHref
     >
@@ -42,10 +42,10 @@ export default function ProductCard({
           <h2 className='text-3xl font-bold'>${price}</h2>
           {type === "product" ? (
             <div>
-              <AddToCart productId={id} />
+              <AddToCart productId={_id} />
             </div>
           ) : (
-            <RemoveCartBtn productId={id} />
+            <RemoveCartBtn productId={_id} />
           )}
         </div>
       </div>
