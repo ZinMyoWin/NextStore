@@ -78,6 +78,7 @@ export default function useCart() {
   }, [userId]);
 
   async function addToCart(productId: string) {
+    // console.log("PRODUCT ID: ", productId)
     if (userId) {
       const response = await fetch(
         process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
@@ -88,12 +89,13 @@ export default function useCart() {
         }
       );
       const updatedCart = await response.json();
+      console.log("Updated Cart", updatedCart)
       setCart(updatedCart);
     }
   }
 
   function productIsInCart(productId: string) {
-    return cart.some((cartItem) => cartItem.id === productId);
+    return cart.some((cartItem) => cartItem._id === productId);
   }
 
   async function removeFromCart(productId: string) {
