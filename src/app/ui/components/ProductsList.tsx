@@ -12,7 +12,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
       {products.map(( product) => (
         <ProductCard key={product._id} {...product} type='product' />
       ))}
-      {session?.user?.role === "user" && (
+      {session?.user?.role === "admin" && (
         <div className="w-full p-2 pt-1 pb-3 h-72">
           <Link
             href={"/products/add-product"}
