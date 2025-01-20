@@ -11,7 +11,7 @@ import { RefreshContext } from "@/app/context/refreshContext";
 
 export default function ShoppingCart() {
   const { session, isLoading, userId } = useCart();
-  const [cart, setCart] = useState<Product[]>([]);
+  const [productIncart, setProductInCart] = useState<Product[]>([]);
   const [cartUpdated, setCartUpdated] = useState(false);
 
   // Fetch the cart data
@@ -26,7 +26,7 @@ export default function ShoppingCart() {
         throw new Error("Failed to fetch cart");
       }
       const cartData = await response.json();
-      setCart(cartData);
+      setProductInCart(cartData);
       console.log("Cart", cartData);
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -85,13 +85,13 @@ export default function ShoppingCart() {
         <RefreshContext.Provider value={refreshCart}>
           <PageTransition>
             <div
-              className={`${cart.length > 0 ? "w-full" : "w-9/12"} mt-1 h-auto`}
+              className={`${productIncart.length > 0 ? "w-full" : "w-9/12"} mt-1 h-auto`}
             >
               <div className='px-2 pt-1'>
                 <h1 className='text-2xl font-bold'>Carts</h1>
               </div>
               <div className='grid grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center'>
-                {cart.map((product) => (
+                {productIncart.map((product) => (
                   <ProductCard key={product.id} {...product} type='cart' />
                 ))}
               </div>

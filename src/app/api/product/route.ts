@@ -1,8 +1,9 @@
 import { connectToDB } from "../db"
 
+const {db} = await connectToDB();
+
 export async function GET(){
 
-    const {db} = await connectToDB();
     const products = await db.collection('products').find({}).toArray();
 
 
