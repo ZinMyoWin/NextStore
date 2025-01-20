@@ -82,31 +82,33 @@ export default function AddProductForm() {
     });
 
   return (
-    <form onSubmit={handleSubmit} className="h-auto w-fit bg-secondary rounded-md p-4 grid grid-cols-1 justify-items-start ">
-      <div className="gap-2 flex flex-col items-start p-1 w-full justify-between h-fit">
+    <form onSubmit={handleSubmit} className="h-fit w-fit bg-secondary rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 ">
+      <div className="gap-2 flex flex-col items-start p-1 w-full justify-between h-20">
         <label className="font-medium">Product Name:</label>
         <input
           type='text'
           name='productName'
-          className="h-1/2 rounded-sm bg-background text-text"
+          className="h-1/2 rounded-sm bg-background text-text w-full"
           value={formData.productName}
           onChange={handleInputChange}
           required
         />
       </div>
-      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit">
-        <label>Short Description:</label>
+      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-32">
+        <label className="font-medium">Short Description:</label>
         <textarea
           name='shortDescription'
           value={formData.shortDescription}
-          className="h-1/2 rounded-sm bg-background text-text w-full"
+          className="h-1/2 rounded-sm bg-background text-text w-full resize-none"
           onChange={handleInputChange}
-          maxLength={150}
+          minLength={50}
+          maxLength={200}
+          
           required
         ></textarea>
       </div>
-      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit">
-        <label>Price:</label>
+      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-20">
+        <label className="font-medium">Price:</label>
         <input
           type='number'
           step='0.01'
@@ -119,7 +121,7 @@ export default function AddProductForm() {
         />
       </div>
       <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit">
-        <label>Image:</label>
+        <label className="font-medium">Image:</label>
         <input
           type='file'
           accept='image/*'
@@ -128,7 +130,7 @@ export default function AddProductForm() {
           required
         />
       </div>
-      <button type='submit' className="h-10 w-full bg-accent text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300">Add Product</button>
+      <button type='submit' className="h-10 w-full  self-end bg-accent text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300">Add Product</button>
     </form>
   );
 }
