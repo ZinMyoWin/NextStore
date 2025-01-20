@@ -32,7 +32,7 @@ export default function ProductCard({
         alt='product-image'
         width={279}
         height={286.48}
-        className='justify-self-center rounded-md'
+        className='justify-self-center rounded-md w-full h-full'
       ></Image>
 
       <div className='h-fit gap-2 flex flex-col items-start p-2'>

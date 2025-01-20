@@ -8,7 +8,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
   const { session } = useCart();
 
   return (
-    <div className='grid grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center '>
+    <div className='grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center '>
       {products.map(( product) => (
         <ProductCard key={product._id} {...product} type='product' />
       ))}
