@@ -1,4 +1,5 @@
 import NotFound from "@/app/not-found";
+import Image from "next/image";
 // import { products } from "../../product-data";
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,8 @@ export default async function ProductDetailPage({
       {product ? (
         <>
           <h1 className='font-bold text-xl'>{product.name}</h1>
-          <div className='text-lg'>{product.description}</div>
+          <Image src={`/productsImage/${product.imageUrl}`} alt="" width={200} height={300} ></Image>
+          <div className='text-lg'>{product.shortDescription}</div>
         </>
       ) : (
         <NotFound />
