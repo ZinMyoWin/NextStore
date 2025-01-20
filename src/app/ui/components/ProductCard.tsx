@@ -24,7 +24,7 @@ export default function ProductCard({
   return (
     <Link
       href={`/products/` + _id}
-      className='grid auto-rows-auto rounded-xl w-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'
+      className='grid auto-rows-auto rounded-xl w-fit h-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'
       passHref
     >
       <Image
