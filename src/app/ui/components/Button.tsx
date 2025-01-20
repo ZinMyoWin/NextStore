@@ -80,11 +80,8 @@ export default function AddToCart({ productId }: cartItemProps) {
   );
 }
 
-type removeFromCartItemProps = {
-  productId: string;
-};
 
-export const RemoveCartBtn = ({ productId }: removeFromCartItemProps) => {
+export const RemoveCartBtn = ({ productId }: cartItemProps) => {
   const { removeFromCart } = useCart();
   const refreshContext = useContext(RefreshContext);
   return (
