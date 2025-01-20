@@ -26,9 +26,10 @@ export default function AddProductForm() {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    console.log("FILE",file?.name)
+    console.log("File selected:", file?.name);
     setFormData({ ...formData, image: file });
   };
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,16 +46,15 @@ export default function AddProductForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productName: formData.productName,
+          name: formData.productName, // Changed from `productName` to `name`
           shortDescription: formData.shortDescription,
           price: formData.price,
-          image: imageBase64,
+          imageUrl: imageBase64,
         }),
       });
   
       if (!response.ok) {
-        // Attempt to parse JSON error response
-        const text = await response.text(); // Read raw text
+        const text = await response.text();
         const errorData = text ? JSON.parse(text) : { error: 'Unknown error occurred' };
         alert(`Error: ${errorData.error}`);
       } else {
@@ -71,8 +71,14 @@ export default function AddProductForm() {
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
+      reader.onload = () => {
+        // console.log("File converted to base64:", reader.result);
+        resolve(reader.result as string);
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+        reject(error);
+      };
     });
 
   return (
