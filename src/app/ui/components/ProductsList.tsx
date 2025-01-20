@@ -9,8 +9,8 @@ export default function ProductsList({ products }: { products: Product[] }) {
 
   return (
     <div className='grid grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center'>
-      {products.map(( product, id) => (
-        <ProductCard key={id} {...product} type='product' />
+      {products.map(( product) => (
+        <ProductCard key={product._id} {...product} type='product' />
       ))}
       {session?.user?.role === "user" && (
         <div>
