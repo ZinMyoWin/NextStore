@@ -72,8 +72,6 @@ export async function DELETE(
       );
     }
 
-    console.log("Remaining product: ", remainingProducts)
-
     return new Response(JSON.stringify(remainingProducts), {
       status: 200,
       headers: {
@@ -98,8 +96,6 @@ export async function DELETE(
 //     // get the database connection
 //     const { db } = await connectToDB();
 //     const {name, shortDescription, price, imageUrl} = await request.json()
-
-
 
 //     const { id } = await params;
 

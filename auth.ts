@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google";
 import client, { connectToDB } from "@/app/api/db";
 import { Adapter } from "next-auth/adapters";
 import { JWT } from "next-auth/jwt";
-import { ObjectId } from "mongodb";
 
 interface CustomUser extends User {
   id?: string;
