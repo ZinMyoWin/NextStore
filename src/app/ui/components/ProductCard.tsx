@@ -23,6 +23,25 @@ export default function ProductCard({
   type,
 }: cartItems) {
   const { session } = useCart();
+
+  async function deleteProduct(event: React.MouseEvent<HTMLDivElement, MouseEvent>): Promise<void> {
+    event.preventDefault();
+    try {
+      const response = await fetch(`/api/product/${_id}`, {
+        method: 'DELETE',
+      });
+      console.log("Response", response)
+      if (!response.ok) {
+        throw new Error('Failed to delete the product');
+      }
+      alert('Product deleted successfully');
+      // Optionally, you can add logic to update the UI or redirect the user
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Error deleting product');
+    }
+  }
+
   return (
     <Link
       href={`/products/` + _id}
@@ -44,8 +63,8 @@ export default function ProductCard({
           <h2 className='text-3xl font-bold'>{price}</h2>
           {type === "product" ? (
             session?.user?.role === "admin" ? (
-              <div>
-                {/* Add admin-specific actions here, e.g., edit or delete buttons */}
+              <div onClick={deleteProduct} className="p-2 bg-accent rounded-lg hover:scale-95">
+                Delete
               </div>
             ) : (
               <AddToCart productId={_id} />

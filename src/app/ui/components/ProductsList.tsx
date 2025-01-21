@@ -18,7 +18,7 @@ export default function ProductsList({ products }: { products: Product[] }) {
             href={"/products/add-product"}
             className='h-full mt-1 hover:bg-accent bg-secondary hover:text-background grid grid-cols-1 justify-items-center items-center border-dashed border-2 border-accent rounded-md group transition-all ease-in-out duration-300 cursor-pointer'
           >
-            <div className=''>Add Product</div>
+            <div className=''>Click to Add Product</div>
           </Link>
         </div>
       )}

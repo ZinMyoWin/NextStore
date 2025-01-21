@@ -101,7 +101,6 @@ export default function AddProductForm() {
           value={formData.shortDescription}
           className="h-1/2 rounded-sm bg-background text-text w-full resize-none"
           onChange={handleInputChange}
-          minLength={50}
           maxLength={200}
           
           required

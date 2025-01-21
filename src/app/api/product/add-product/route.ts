@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       console.log(imageUrl)
 
     // Validate required fields
-    if (!name) {
+    if (!name || !shortDescription || !price || !imageUrl) {
       return NextResponse.json(
         { error: "All fields are required." },
         { status: 400 }
