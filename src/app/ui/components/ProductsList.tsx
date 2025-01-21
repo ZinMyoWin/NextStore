@@ -70,12 +70,12 @@ export default function ProductsList() {
     [fetchProducts]
   );
 
-  if (productList.length === 0) {
-    return <div>No products available.</div>;
-  }
+  
 
   return (
     <ProductContext.Provider value={{ fetchProducts, deleteProduct }}>
+
+      
       <div className='grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center'>
         {productList.map((product) => (
           <ProductCard key={product._id} {...product} type='product' />
