@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
+import { toast } from "sonner";
 
 interface FormData {
   productName: string;
@@ -17,6 +18,9 @@ export default function AddProductForm() {
     image: null,
   });
 
+  // Create a ref for the file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -30,21 +34,20 @@ export default function AddProductForm() {
     setFormData({ ...formData, image: file });
   };
 
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-  
+
     if (!formData.image) {
-      alert('Please upload an image.');
+      alert("Please upload an image.");
       return;
     }
-  
+
     try {
       const imageBase64 = await toBase64(formData.image);
-  
-      const response = await fetch('/api/product/add-product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+
+      const response = await fetch("/api/product/add-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.productName, // Changed from `productName` to `name`
           shortDescription: formData.shortDescription,
@@ -52,20 +55,36 @@ export default function AddProductForm() {
           imageUrl: imageBase64,
         }),
       });
-  
+
       if (!response.ok) {
         const text = await response.text();
-        const errorData = text ? JSON.parse(text) : { error: 'Unknown error occurred' };
+        const errorData = text
+          ? JSON.parse(text)
+          : { error: "Unknown error occurred" };
         alert(`Error: ${errorData.error}`);
       } else {
-        alert('Product added successfully!');
+        toast("Product Added", {
+          description: "Product Added Successfully",
+        });
+
+        // Reset the form state
+        setFormData({
+          productName: "",
+          shortDescription: "",
+          price: "",
+          image: null,
+        });
+
+        // Reset the file input value
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""; // Clear the file input
+        }
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('An unexpected error occurred. Please try again.');
+      console.error("Error submitting form:", error);
+      alert("An unexpected error occurred. Please try again.");
     }
   };
-  
 
   const toBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -82,54 +101,62 @@ export default function AddProductForm() {
     });
 
   return (
-    <form onSubmit={handleSubmit} className="h-fit w-fit bg-secondary rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 ">
-      <div className="gap-2 flex flex-col items-start p-1 w-full justify-between h-20">
-        <label className="font-medium">Product Name:</label>
+    <form
+      onSubmit={handleSubmit}
+      className='h-fit w-fit bg-secondary rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 '
+    >
+      <div className='gap-2 flex flex-col items-start p-1 w-full justify-between h-20'>
+        <label className='font-medium'>Product Name:</label>
         <input
           type='text'
           name='productName'
-          className="h-1/2 rounded-sm bg-background text-text w-full"
+          className='h-1/2 rounded-sm bg-background text-text w-full'
           value={formData.productName}
           onChange={handleInputChange}
           required
         />
       </div>
-      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-32">
-        <label className="font-medium">Short Description:</label>
+      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-32'>
+        <label className='font-medium'>Short Description:</label>
         <textarea
           name='shortDescription'
           value={formData.shortDescription}
-          className="h-1/2 rounded-sm bg-background text-text w-full resize-none"
+          className='h-1/2 rounded-sm bg-background text-text w-full resize-none'
           onChange={handleInputChange}
           maxLength={200}
-          
           required
         ></textarea>
       </div>
-      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-20">
-        <label className="font-medium">Price:</label>
+      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-20'>
+        <label className='font-medium'>Price:</label>
         <input
           type='number'
           step='0.01'
           name='price'
-          className="h-1/2 rounded-sm bg-background text-text w-full"
+          className='h-1/2 rounded-sm bg-background text-text w-full'
           value={formData.price}
           onChange={handleInputChange}
           min={5}
           required
         />
       </div>
-      <div className="gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit">
-        <label className="font-medium">Image:</label>
+      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit'>
+        <label className='font-medium'>Image:</label>
         <input
           type='file'
           accept='image/*'
-          className="h-1/2 rounded-sm bg-background text-text w-full p-2"
+          className='h-1/2 rounded-sm bg-background text-text w-full p-2'
           onChange={handleFileChange}
+          ref={fileInputRef} // Attach the ref to the file input
           required
         />
       </div>
-      <button type='submit' className="h-10 w-full  self-end bg-accent text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300">Add Product</button>
+      <button
+        type='submit'
+        className='h-10 w-full  self-end bg-primary text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300'
+      >
+        Add Product
+      </button>
     </form>
   );
 }

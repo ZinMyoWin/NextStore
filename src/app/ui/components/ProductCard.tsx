@@ -6,7 +6,6 @@ import useCart from "@/app/hooks/useCart";
 import DeleteInactive from "../../../../public/icons/delete-inactive.svg";
 import DeleteActive from "../../../../public/icons/delete-active.svg";
 import { useState } from "react";
-import { toast } from "sonner";
 import { ConfirmationAlert } from "./AlertDialog";
 
 interface CartItem {
@@ -18,9 +17,9 @@ interface CartItem {
   type: string;
 }
 
-interface ProductCardProps extends CartItem {
-  onDelete: (deletedId: string) => void;
-}
+// interface ProductCardProps extends CartItem {
+//   onDelete: (deletedId: string) => void;
+// }
 
 export default function ProductCard({
   _id,
@@ -29,35 +28,16 @@ export default function ProductCard({
   shortDescription,
   price,
   type,
-  onDelete,
-}: ProductCardProps) {
+}: CartItem) {
   const { session } = useCart();
   const [deleteActive, setDeleteActive] = useState(false);
-  async function deleteProduct() {
-    console.log("Delete product clicked");
+  const productId = _id;
 
-    try {
-      const response = await fetch(`/api/product/${_id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete the product");
-      }
-      onDelete(_id); // Notify the parent component to update the UI
-      // Show success toast
-      toast("Product Deleted", {
-        description: "The product has been deleted successfully.",
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Error deleting product");
-    }
-  }
+  
 
   return (
     <div className='grid auto-rows-auto rounded-xl w-fit h-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'>
-      <Link href={`/products/` + _id} passHref>
+      <Link href={`/products/` + productId} passHref>
         <Image
           src={"/productsImage/" + imageUrl}
           alt='product-image'
@@ -77,15 +57,16 @@ export default function ProductCard({
               <ConfirmationAlert
                 setDeleteActive={setDeleteActive}
                 deleteActive={deleteActive}
-                deleteProduct={deleteProduct}
+                productId={productId}
                 DeleteActiveIcon={DeleteActive}
                 DeleteInactiveIcon={DeleteInactive}
+                
               />
             ) : (
-              <AddToCart productId={_id} />
+              <AddToCart productId={productId} />
             )
           ) : (
-            <RemoveCartBtn productId={_id} />
+            <RemoveCartBtn productId={productId} />
           )}
         </div>
       </div>

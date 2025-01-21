@@ -1,6 +1,8 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "../../db";
 import { ObjectId } from "mongodb";
+import { promises as fs } from "fs";
+import path from "path";
 
 type Params = {
   id: string;
@@ -51,40 +53,60 @@ export async function DELETE(
   { params }: { params: Params }
 ) {
   try {
-    // get the database connection
+    // Get the database connection
     const { db } = await connectToDB();
+    const { id } = params;
 
-    const { id } = await params;
-
-    const remainingProducts = db
+    // 1. Find the product to get the image filename
+    const product = await db
       .collection("products")
-      .findOneAndDelete({ _id: new ObjectId(id) });
+      .findOne({ _id: new ObjectId(id) });
 
-    if (!remainingProducts) {
-      return new Response(
-        JSON.stringify({ message: "No Products To Delete. " }),
-        {
-          status: 404,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+    if (!product) {
+      return NextResponse.json(
+        { message: "Product not found" },
+        { status: 404 }
       );
     }
 
-    return new Response(JSON.stringify(remainingProducts), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching product:", error);
+    // 2. Delete the product from the database
+    const deleteResult = await db
+      .collection("products")
+      .deleteOne({ _id: new ObjectId(id) });
 
-    // Return a 500 response for any server errors
-    return new Response("Internal Server Error", {
-      status: 500,
-    });
+    if (deleteResult.deletedCount === 0) {
+      return NextResponse.json(
+        { message: "Failed to delete product" },
+        { status: 404 }
+      );
+    }
+
+    // 3. Delete the associated image file
+    const imagePath = path.join(
+      process.cwd(),
+      "public",
+      "productsImage",
+      product.imageUrl // e.g., "12345-product-name.jpg"
+    );
+
+    try {
+      await fs.unlink(imagePath); // Delete the file
+      console.log("Image deleted successfully:", imagePath);
+    } catch (fileError) {
+      console.error("Error deleting image:", fileError);
+      // Optionally: You can decide to handle this error (e.g., log it but still return success)
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Product and image deleted" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 

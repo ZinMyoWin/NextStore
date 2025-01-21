@@ -11,22 +11,38 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
+import { useContext } from "react";
+import { ProductContext } from "./ProductsList";
 
 interface DeleteItemsTypes {
-  deleteProduct: () => void; // Function to delete the product
   setDeleteActive: (active: boolean) => void; // Function to set delete active state
   deleteActive: boolean; // State to track if delete is active
   DeleteActiveIcon: string; // Icon for active state
   DeleteInactiveIcon: string; // Icon for inactive state
+  productId: string;
 }
 
 export function ConfirmationAlert({
-  deleteProduct,
   setDeleteActive,
   deleteActive,
   DeleteActiveIcon,
   DeleteInactiveIcon,
+  productId,
 }: DeleteItemsTypes) {
+  const context = useContext(ProductContext);
+
+  if (!context) {
+    throw new Error(
+      "ConfirmationAlert must be used within a ProductContext.Provider"
+    );
+  }
+
+  const { deleteProduct } = context;
+
+  const handleDelete = () => {
+    deleteProduct(productId);
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -63,7 +79,7 @@ export function ConfirmationAlert({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <button  onClick={deleteProduct}>Delete</button>
+            <button onClick={handleDelete}>Delete</button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
