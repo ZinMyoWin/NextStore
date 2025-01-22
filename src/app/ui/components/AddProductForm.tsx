@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useRef,
-} from "react";
+import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
 import { toast } from "sonner";
 import PreviewProductCard from "./PreviewProdcutCard";
 
@@ -23,7 +18,6 @@ export default function AddProductForm() {
     price: "",
     image: null,
   });
-
 
   // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -114,7 +108,6 @@ export default function AddProductForm() {
 
   return (
     <div className='grid grid-flow-col justify-items-center h-full bg-background'>
-     
       <form
         onSubmit={handleSubmit}
         className='h-full w-full bg-background rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 '
@@ -128,8 +121,6 @@ export default function AddProductForm() {
             value={formData.productName}
             onChange={handleInputChange}
             required
-            
-            
           />
         </div>
         <div className='gap-2 flex flex-col items-start  p-1 w-full justify-center h-auto'>
@@ -155,13 +146,32 @@ export default function AddProductForm() {
             onChange={handleInputChange}
             min={5}
             required
-            
           />
         </div>
         <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit'>
-          <div onClick={handleUploadImage} className="w-full cursor-pointer h-40 bg-secondary grid grid-cols-1 justify-items-center rounded-lg border-dashed border-2 group">
-            <button type='submit'  className="group-hover:scale-110 transition-all ease-in-out">
-              Upload Image
+          <div
+            onClick={handleUploadImage}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const files = e.dataTransfer.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+                console.log("File dropped:", file.name);
+                setFormData({ ...formData, image: file });
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className='w-full cursor-pointer h-40 bg-secondary grid grid-cols-1 justify-items-center rounded-lg border-dashed border-2 group'
+          >
+            <button
+              type='submit'
+              className='group-hover:scale-110 transition-all ease-in-out'
+            >
+              Click or Drop to upload Image
             </button>
           </div>
           <input
@@ -175,18 +185,6 @@ export default function AddProductForm() {
           />
         </div>
 
-        {/* {formData.image && (
-        <div className="w-full p-1">
-
-        <Image
-          src={URL.createObjectURL(formData.image)}
-          alt="Selected product"
-          className="h-52 w-full object-fill mt-2 rounded-lg"
-          width={35}
-          height={35}
-          />
-          </div>
-      )} */}
         <button
           type='submit'
           className='h-10 w-full  self-end bg-primary text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300'
