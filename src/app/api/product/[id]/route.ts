@@ -167,7 +167,8 @@ export async function PUT(
       }.webp`;
 
       // Define the path to save the image in the public/productsImage folder
-      const imageDir = path.join(process.cwd(), "public", "productsImage");
+      // const imageDir = path.join(process.cwd(), "public", "productsImage");
+      const imageDir = "/tmp";
       const imagePath = path.join(imageDir, imageName);
 
       // Ensure the directory exists
