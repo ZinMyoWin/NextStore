@@ -110,45 +110,119 @@ export async function DELETE(
   }
 }
 
-// export async function PUT(
-//   request: NextRequest,
-//   { params }: { params: Params }
-// ) {
-//   try {
-//     // get the database connection
-//     const { db } = await connectToDB();
-//     const {name, shortDescription, price, imageUrl} = await request.json()
+// Define the type for the product data
+interface ProductData {
+  name?: string;
+  imageUrl?: string;
+  shortDescription?: string;
+  price?: string;
+}
 
-//     const { id } = await params;
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Extract product data from the request body
+    const { name, shortDescription, price, imageUrl }: ProductData =
+      await req.json();
 
-//     const remainingProducts = db
-//       .collection("products")
-//       .findOneAndUpdate({ _id: new ObjectId(id) } , {});
+    // Get the product ID from the URL params
+    const { id } = params;
 
-//     if (!remainingProducts) {
-//       return new Response(
-//         JSON.stringify({ message: "No Products To Delete. " }),
-//         {
-//           status: 404,
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-//     }
+    // Connect to the database
+    const { db } = await connectToDB();
+    const productsCollection = db.collection("products");
 
-//     return new Response(JSON.stringify(remainingProducts), {
-//       status: 200,
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error fetching product:", error);
+    // Find the existing product
+    const existingProduct = await productsCollection.findOne({
+      _id: new ObjectId(id),
+    });
 
-//     // Return a 500 response for any server errors
-//     return new Response("Internal Server Error", {
-//       status: 500,
-//     });
-//   }
-// }
+    if (!existingProduct) {
+      return NextResponse.json(
+        { error: "Product not found." },
+        { status: 404 }
+      );
+    }
+
+    // Handle image update
+    let updatedImageUrl = existingProduct.imageUrl; // Use the existing image URL by default
+
+    if (imageUrl && imageUrl.startsWith("data:")) {
+      // Convert the base64 image string into binary format
+      const base64Data = imageUrl.split(",")[1]; // Remove the data URL prefix
+      if (!base64Data) {
+        return NextResponse.json(
+          { error: "Invalid image format." },
+          { status: 400 }
+        );
+      }
+
+      const imageBuffer = Buffer.from(base64Data, "base64");
+
+      // Generate a unique filename for the image
+      const imageName = `${Date.now()}-${
+        name || existingProduct.name.replace(/\s+/g, "-")
+      }.webp`;
+
+      // Define the path to save the image in the public/productsImage folder
+      const imageDir = path.join(process.cwd(), "public", "productsImage");
+      const imagePath = path.join(imageDir, imageName);
+
+      // Ensure the directory exists
+      await fs.mkdir(imageDir, { recursive: true });
+
+      // Write the new image to the file system
+      await fs.writeFile(imagePath, imageBuffer);
+
+      // Update the image URL
+      updatedImageUrl = imageName;
+
+      // Delete the old image file
+      const oldImagePath = path.join(
+        process.cwd(),
+        "public",
+        "productsImage",
+        existingProduct.imageUrl
+      );
+
+      // Check if the old image file exists before deleting
+      try {
+        await fs.access(oldImagePath); // Check if the file exists
+        await fs.unlink(oldImagePath); // Delete the file
+        console.log("Old image deleted successfully:", oldImagePath);
+      } catch (err) {
+        console.error("Failed to delete old image:", err);
+      }
+    }
+
+    // Create an object with updated fields
+    const updatedFields = {
+      name: name || existingProduct.name,
+      shortDescription: shortDescription || existingProduct.shortDescription,
+      price: price ? parseFloat(price) : existingProduct.price,
+      imageUrl: updatedImageUrl,
+      updatedAt: new Date(),
+    };
+
+    // Update the product in the database
+    const result = await productsCollection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updatedFields },
+      { returnDocument: "after" } // Return the updated document
+    );
+
+    // Respond with success and the updated product
+    return NextResponse.json(
+      { success: true, product: result },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return NextResponse.json(
+      { error: "Failed to update product." },
+      { status: 500 }
+    );
+  }
+}
