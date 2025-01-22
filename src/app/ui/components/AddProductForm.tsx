@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useRef,
+} from "react";
 import { toast } from "sonner";
+import PreviewProductCard from "./PreviewProdcutCard";
 
 interface FormData {
   productName: string;
@@ -18,6 +24,7 @@ export default function AddProductForm() {
     image: null,
   });
 
+
   // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +39,11 @@ export default function AddProductForm() {
     const file = e.target.files?.[0] || null;
     console.log("File selected:", file?.name);
     setFormData({ ...formData, image: file });
+  };
+
+  const handleUploadImage = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -101,62 +113,89 @@ export default function AddProductForm() {
     });
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='h-fit w-fit bg-secondary rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 '
-    >
-      <div className='gap-2 flex flex-col items-start p-1 w-full justify-between h-20'>
-        <label className='font-medium'>Product Name:</label>
-        <input
-          type='text'
-          name='productName'
-          className='h-1/2 rounded-sm bg-background text-text w-full'
-          value={formData.productName}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-32'>
-        <label className='font-medium'>Short Description:</label>
-        <textarea
-          name='shortDescription'
-          value={formData.shortDescription}
-          className='h-1/2 rounded-sm bg-background text-text w-full resize-none'
-          onChange={handleInputChange}
-          maxLength={200}
-          required
-        ></textarea>
-      </div>
-      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-20'>
-        <label className='font-medium'>Price:</label>
-        <input
-          type='number'
-          step='0.01'
-          name='price'
-          className='h-1/2 rounded-sm bg-background text-text w-full'
-          value={formData.price}
-          onChange={handleInputChange}
-          min={5}
-          required
-        />
-      </div>
-      <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit'>
-        <label className='font-medium'>Image:</label>
-        <input
-          type='file'
-          accept='image/*'
-          className='h-1/2 rounded-sm bg-background text-text w-full p-2'
-          onChange={handleFileChange}
-          ref={fileInputRef} // Attach the ref to the file input
-          required
-        />
-      </div>
-      <button
-        type='submit'
-        className='h-10 w-full  self-end bg-primary text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300'
+    <div className='grid grid-flow-col justify-items-center h-full bg-background'>
+     
+      <form
+        onSubmit={handleSubmit}
+        className='h-full w-full bg-background rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 '
       >
-        Add Product
-      </button>
-    </form>
+        <div className='gap-2 flex flex-col items-start p-1 w-full justify-center h-auto '>
+          <label className='font-medium'>Product Name</label>
+          <input
+            type='text'
+            name='productName'
+            className='h-1/2 rounded-sm bg-secondary text-text w-full'
+            value={formData.productName}
+            onChange={handleInputChange}
+            required
+            
+            
+          />
+        </div>
+        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-center h-auto'>
+          <label className='font-medium'>Short Description</label>
+          <textarea
+            name='shortDescription'
+            value={formData.shortDescription}
+            className='h-1/2 rounded-sm bg-secondary text-text w-full resize-none'
+            onChange={handleInputChange}
+            maxLength={200}
+            required
+          ></textarea>
+        </div>
+        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-center h-auto'>
+          <label className='font-medium'>Price</label>
+
+          <input
+            type='number'
+            step='0.01'
+            name='price'
+            className='h-1/2 rounded-sm bg-secondary text-text w-full'
+            value={formData.price}
+            onChange={handleInputChange}
+            min={5}
+            required
+            
+          />
+        </div>
+        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit'>
+          <div onClick={handleUploadImage} className="w-full cursor-pointer h-40 bg-secondary grid grid-cols-1 justify-items-center rounded-lg border-dashed border-2 group">
+            <button type='submit'  className="group-hover:scale-110 transition-all ease-in-out">
+              Upload Image
+            </button>
+          </div>
+          <input
+            type='file'
+            accept='image/*'
+            className='h-1/2 rounded-sm bg-secondary text-text w-full p-2'
+            onChange={handleFileChange}
+            ref={fileInputRef} // Attach the ref to the file input
+            required
+            hidden
+          />
+        </div>
+
+        {/* {formData.image && (
+        <div className="w-full p-1">
+
+        <Image
+          src={URL.createObjectURL(formData.image)}
+          alt="Selected product"
+          className="h-52 w-full object-fill mt-2 rounded-lg"
+          width={35}
+          height={35}
+          />
+          </div>
+      )} */}
+        <button
+          type='submit'
+          className='h-10 w-full  self-end bg-primary text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300'
+        >
+          Add Product
+        </button>
+      </form>
+
+      <PreviewProductCard {...formData} />
+    </div>
   );
 }
