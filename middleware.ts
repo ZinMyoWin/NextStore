@@ -8,6 +8,7 @@ export function middleware(req: NextRequest) {
   const allowedOrigins = [
     "https://nextjs-ecommerce-app-theta.vercel.app",
     "http://localhost:3000",
+    "http://localhost:3001",
   ];
   const origin = req.headers.get("origin");
 
