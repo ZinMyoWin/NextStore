@@ -3,6 +3,7 @@ import { connectToDB } from "../../db";
 import { ObjectId } from "mongodb";
 import { promises as fs } from "fs";
 import path from "path";
+import cloudinary from "@/lib/cloudinary";
 
 type Params = {
   id: string;
@@ -53,58 +54,38 @@ export async function DELETE(
   { params }: { params: Params }
 ) {
   try {
-    // Get the database connection
     const { db } = await connectToDB();
-    const { id } = params;
-
-    // 1. Find the product to get the image filename
-    const product = await db
-      .collection("products")
-      .findOne({ _id: new ObjectId(id) });
+    
+    // First get the product to get the Cloudinary public_id
+    const product = await db.collection("products").findOne({
+      _id: new ObjectId(params.id),
+    });
 
     if (!product) {
       return NextResponse.json(
-        { message: "Product not found" },
+        { error: "Product not found" },
         { status: 404 }
       );
     }
 
-    // 2. Delete the product from the database
-    const deleteResult = await db
-      .collection("products")
-      .deleteOne({ _id: new ObjectId(id) });
-
-    if (deleteResult.deletedCount === 0) {
-      return NextResponse.json(
-        { message: "Failed to delete product" },
-        { status: 404 }
-      );
+    // Delete image from Cloudinary if it exists
+    if (product.cloudinaryPublicId) {
+      await cloudinary.uploader.destroy(product.cloudinaryPublicId);
     }
 
-    // 3. Delete the associated image file
-    const imagePath = path.join(
-      process.cwd(),
-      "public",
-      "productsImage",
-      product.imageUrl // e.g., "12345-product-name.jpg"
-    );
-
-    try {
-      await fs.unlink(imagePath); // Delete the file
-      console.log("Image deleted successfully:", imagePath);
-    } catch (fileError) {
-      console.error("Error deleting image:", fileError);
-      // Optionally: You can decide to handle this error (e.g., log it but still return success)
-    }
+    // Delete product from database
+    await db.collection("products").deleteOne({
+      _id: new ObjectId(params.id),
+    });
 
     return NextResponse.json(
-      { success: true, message: "Product and image deleted" },
+      { message: "Product deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error deleting product:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to delete product" },
       { status: 500 }
     );
   }

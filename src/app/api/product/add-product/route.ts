@@ -16,10 +16,10 @@ export async function POST(req: Request) {
     // Extract product data from the request body
     const { name, shortDescription, price, imageUrl }: ProductData =
       await req.json();
-      // console.log(name)
-      // console.log(shortDescription)
-      // console.log(price)
-      // console.log(imageUrl)
+    // console.log(name)
+    // console.log(shortDescription)
+    // console.log(price)
+    // console.log(imageUrl)
 
     // Validate required fields
     if (!name || !shortDescription || !price || !imageUrl) {
