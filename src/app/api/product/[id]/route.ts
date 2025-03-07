@@ -17,8 +17,8 @@ export async function GET(
     // Connect to the database
     const { db } = await connectToDB();
 
-    // Extract the `id` from the request parameters like params.id
-    const { id } = await params;
+    // Extract the `id` from the request parameters
+    const { id } = params;
 
     // Query the database to find the product by `id`
     const product = await db
@@ -33,19 +33,15 @@ export async function GET(
     }
 
     // Return the found product as JSON
-    return new Response(JSON.stringify(product), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return NextResponse.json(product);
   } catch (error) {
     console.error("Error fetching product:", error);
 
     // Return a 500 response for any server errors
-    return new Response("Internal Server Error", {
-      status: 500,
-    });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -55,17 +51,14 @@ export async function DELETE(
 ) {
   try {
     const { db } = await connectToDB();
-    
+
     // First get the product to get the Cloudinary public_id
     const product = await db.collection("products").findOne({
       _id: new ObjectId(params.id),
     });
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     // Delete image from Cloudinary if it exists
