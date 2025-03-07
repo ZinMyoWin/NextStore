@@ -50,7 +50,7 @@ function SuccessContent() {
     if (sessionId) {
       clearCart();
     }
-  }, [searchParams]);
+  }, [sessionId]);
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-background px-4'>

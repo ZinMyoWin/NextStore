@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ProductCard from "./ProductCard";
 import Link from "next/link";
 import useCart from "@/app/hooks/useCart";
@@ -51,25 +51,9 @@ export default function ProductsList() {
 
   useEffect(() => {
     filterProducts();
-  }, [products, searchQuery, filters]);
+  }, [products, searchQuery, filters, filterProducts]);
 
-  async function fetchProducts() {
-    try {
-      const response = await fetch("/api/product");
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Failed to fetch products");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  function filterProducts() {
+  const filterProducts = useCallback(() => {
     let filtered = [...products];
 
     // Apply search filter
@@ -97,6 +81,22 @@ export default function ProductsList() {
     }
 
     setFilteredProducts(filtered);
+  }, [products, searchQuery, filters]);
+
+  async function fetchProducts() {
+    try {
+      const response = await fetch("/api/product");
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to fetch products");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleDeleteProduct(productId: string) {
