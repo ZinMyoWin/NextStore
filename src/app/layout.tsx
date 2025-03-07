@@ -17,10 +17,8 @@ export default function RootLayout({
     <html lang='en'>
       <body className='flex bg-background'>
         <Sidebar />
-        <main className='flex-1 p-4 ml-52'>
-          {children}
-        </main>
-        <Toaster/>
+        <main className='flex-1 p-8 ml-64'>{children}</main>
+        <Toaster />
       </body>
     </html>
   );
