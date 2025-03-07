@@ -19,9 +19,7 @@ export default function ProductsList() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_SITE_URL + "/api/product"
-      );
+      const response = await fetch("/api/product");
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
