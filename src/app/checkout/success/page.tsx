@@ -5,8 +5,9 @@ import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Suspense } from "react";
 
-export default function SuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -29,7 +30,7 @@ export default function SuccessPage() {
     if (sessionId) {
       clearCart();
     }
-  }, [sessionId]);
+  }, [searchParams]);
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-background px-4'>
@@ -60,5 +61,13 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccess() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }
