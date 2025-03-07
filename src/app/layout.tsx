@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Footer from "./components/Footer";
 import Sidebar from "./ui/components/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
-  title: "NexE",
-  description: "Developed by Zin Myo Win",
+  title: "NextStore - Your One-Stop Shop",
+  description: "Discover amazing products at great prices",
 };
 
 export default function RootLayout({
@@ -15,9 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className='flex bg-background'>
+      <body className={`${inter.className} flex`}>
         <Sidebar />
-        <main className='flex-1 p-8 ml-64'>{children}</main>
+        <div className='flex-1 flex flex-col min-h-screen ml-64'>
+          <main className='flex-1'>{children}</main>
+          <Footer />
+        </div>
         <Toaster />
       </body>
     </html>
