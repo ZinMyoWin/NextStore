@@ -15,7 +15,6 @@ import CheckoutButton from "./CheckoutButton";
 export default function ShoppingCart() {
   const { session, isLoading, userId } = useCart();
   const [productIncart, setProductInCart] = useState<Product[]>([]);
-  const [cartUpdated, setCartUpdated] = useState(false);
 
   // Calculate cart total
   const cartTotal = productIncart.reduce(
@@ -46,9 +45,9 @@ export default function ShoppingCart() {
     fetchCart();
   }, [fetchCart]);
 
-  const refreshCart = () => {
-    setCartUpdated((prev) => !prev);
-  };
+  const refreshCart = useCallback(() => {
+    fetchCart(); // Directly call fetchCart instead of toggling a state
+  }, [fetchCart]);
 
   if (isLoading) {
     return (

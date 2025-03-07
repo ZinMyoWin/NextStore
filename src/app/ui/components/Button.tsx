@@ -24,9 +24,9 @@ export default function AddToCart({ productId }: cartItemProps) {
   }
 
   useEffect(() => {
-    const isLoading = productIsInCart(productId);
-    // This ensures the button status is updated when the cart changes
-  }, [productIsInCart(productId)]);
+    // Function body can be empty if we're just monitoring for changes
+    // No need to assign to isLoading here since we're already destructuring it from useCart
+  }, [productId, productIsInCart]);
 
   if (isLoading) {
     return (
