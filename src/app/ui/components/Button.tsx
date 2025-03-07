@@ -7,13 +7,11 @@ import useCart from "@/app/hooks/useCart";
 import { useContext, useEffect } from "react";
 import { RefreshContext } from "@/app/context/refreshContext";
 
-// Define the props type for AddToCart
-type cartItemProps = {
+export interface cartItemProps {
   productId: string;
-};
+}
 
 export default function AddToCart({ productId }: cartItemProps) {
-  // Function to check authentication before adding to cart
   const { removeFromCart, checkAuthentication, productIsInCart, isLoading } =
     useCart();
 
@@ -25,7 +23,6 @@ export default function AddToCart({ productId }: cartItemProps) {
     }
   }
 
-  // Re-render when cart changes
   useEffect(() => {
     // This ensures the button status is updated when the cart changes
   }, [productIsInCart(productId)]);
@@ -39,7 +36,7 @@ export default function AddToCart({ productId }: cartItemProps) {
           viewBox='0 0 48 48'
           fill='none'
           xmlns='http://www.w3.org/2000/svg'
-          className="animate-spin"
+          className='animate-spin'
         >
           <path
             opacity='0.1'
@@ -56,61 +53,59 @@ export default function AddToCart({ productId }: cartItemProps) {
           />
         </svg>
       </div>
-    ); // Show a loading state while cart data is being fetched
+    );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 10 }}
-      animate={{ opacity: 1, x: 0 }}
-      whileHover={{ scale: 1.03 }}
-      transition={{ type: "spring", bounce: 0.25 }}
-      whileTap={{ scale: 0.7 }}
+    <button
       onClick={(e) => {
         e.preventDefault();
         handleOnClick();
       }}
+      className='hover:scale-105 transition-transform duration-300'
     >
       {productIsInCart(productId) ? (
         <Image src={inCart} alt='in cart' width={35} height={35} />
       ) : (
         <Image src={notInCart} alt='notInCart' width={35} height={35} />
       )}
-    </motion.div>
+    </button>
   );
 }
-
 
 export const RemoveCartBtn = ({ productId }: cartItemProps) => {
   const { removeFromCart } = useCart();
   const refreshContext = useContext(RefreshContext);
+
+  const handleRemove = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await removeFromCart(productId);
+    if (refreshContext) {
+      refreshContext(); // Call refresh after removal
+    }
+  };
+
   return (
-    <>
-      <motion.button
-        initial={{
-          opacity: 0,
-          x: 10,
-        }}
-        animate={{
-          opacity: 1,
-          x: 0,
-        }}
-        whileHover={{ opacity: 0.7, scale: 1.03 }}
-        transition={{
-          type: "spring",
-          bounce: 0.25,
-        }}
-        whileTap={{
-          scale: 0.7,
-        }}
-        onClick={(e) => {
-          e.preventDefault();
-          removeFromCart(productId);
-          refreshContext();
-        }}
-      >
-        <Image src={inCart} alt='in cart' width={35} height={35} />
-      </motion.button>
-    </>
+    <motion.button
+      initial={{
+        opacity: 0,
+        x: 10,
+      }}
+      animate={{
+        opacity: 1,
+        x: 0,
+      }}
+      whileHover={{ opacity: 0.7, scale: 1.03 }}
+      transition={{
+        type: "spring",
+        bounce: 0.25,
+      }}
+      whileTap={{
+        scale: 0.7,
+      }}
+      onClick={handleRemove}
+    >
+      <Image src={inCart} alt='in cart' width={35} height={35} />
+    </motion.button>
   );
 };
