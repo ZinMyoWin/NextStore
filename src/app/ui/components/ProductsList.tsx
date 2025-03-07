@@ -49,10 +49,6 @@ export default function ProductsList() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    filterProducts();
-  }, [products, searchQuery, filters, filterProducts]);
-
   const filterProducts = useCallback(() => {
     let filtered = [...products];
 
@@ -82,6 +78,10 @@ export default function ProductsList() {
 
     setFilteredProducts(filtered);
   }, [products, searchQuery, filters]);
+
+  useEffect(() => {
+    filterProducts();
+  }, [products, searchQuery, filters, filterProducts]);
 
   async function fetchProducts() {
     try {
