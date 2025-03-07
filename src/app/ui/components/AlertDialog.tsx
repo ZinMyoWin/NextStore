@@ -11,15 +11,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
-import { useContext } from "react";
-import { ProductContext } from "./ProductsList";
+import { StaticImageData } from "next/image";
 
 interface DeleteItemsTypes {
-  setDeleteActive: (active: boolean) => void; // Function to set delete active state
-  deleteActive: boolean; // State to track if delete is active
-  DeleteActiveIcon: string; // Icon for active state
-  DeleteInactiveIcon: string; // Icon for inactive state
+  setDeleteActive: React.Dispatch<React.SetStateAction<boolean>>;
+  deleteActive: boolean;
   productId: string;
+  DeleteActiveIcon: StaticImageData;
+  DeleteInactiveIcon: StaticImageData;
+  onConfirm?: () => void;
 }
 
 export function ConfirmationAlert({
@@ -27,60 +27,36 @@ export function ConfirmationAlert({
   deleteActive,
   DeleteActiveIcon,
   DeleteInactiveIcon,
-  productId,
+  onConfirm,
 }: DeleteItemsTypes) {
-  const context = useContext(ProductContext);
-
-  if (!context) {
-    throw new Error(
-      "ConfirmationAlert must be used within a ProductContext.Provider"
-    );
-  }
-
-  const { deleteProduct } = context;
-
-  const handleDelete = () => {
-    deleteProduct(productId);
-  };
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button
+        <div
+          className='cursor-pointer'
           onMouseEnter={() => setDeleteActive(true)}
           onMouseLeave={() => setDeleteActive(false)}
-          className='w-fit h-fit'
         >
-          {deleteActive ? (
-            <Image
-              src={DeleteActiveIcon}
-              alt='delete active'
-              width={35}
-              height={35}
-            />
-          ) : (
-            <Image
-              src={DeleteInactiveIcon}
-              alt='delete inactive'
-              width={35}
-              height={35}
-            />
-          )}
-        </button>
+          <Image
+            src={deleteActive ? DeleteActiveIcon : DeleteInactiveIcon}
+            alt='Delete Icon'
+            className='w-6 h-6'
+          />
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete the product and remove it from your
-            store.
+            This action cannot be undone. This will permanently delete this
+            product from the store.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <button onClick={handleDelete}>Delete</button>
-          </AlertDialogAction>
+          <AlertDialogCancel onClick={() => setDeleteActive(false)}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Delete</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
