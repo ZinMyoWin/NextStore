@@ -19,7 +19,7 @@ export default function ShoppingCart() {
     if (!userId) return; // Ensure userId is available
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/users/${userId}/cart`,
+        `/api/users/${userId}/cart`,
         { cache: "no-cache" }
       );
       if (!response.ok) {
