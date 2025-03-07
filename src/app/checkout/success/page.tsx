@@ -7,7 +7,27 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Suspense } from "react";
 
-function CheckoutSuccessContent() {
+// Loading component
+function Loading() {
+  return (
+    <div className='min-h-screen flex items-center justify-center bg-background px-4'>
+      <div className='max-w-md w-full p-8 bg-card rounded-xl shadow-lg text-center'>
+        <div className='animate-pulse space-y-4'>
+          <div className='w-16 h-16 bg-muted rounded-full mx-auto'></div>
+          <div className='h-6 bg-muted rounded w-3/4 mx-auto'></div>
+          <div className='h-4 bg-muted rounded w-1/2 mx-auto'></div>
+          <div className='space-y-2'>
+            <div className='h-10 bg-muted rounded'></div>
+            <div className='h-10 bg-muted rounded'></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Success content component
+function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -64,10 +84,11 @@ function CheckoutSuccessContent() {
   );
 }
 
-export default function CheckoutSuccess() {
+// Main page component
+export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CheckoutSuccessContent />
+    <Suspense fallback={<Loading />}>
+      <SuccessContent />
     </Suspense>
   );
 }
