@@ -6,6 +6,9 @@ import PageTransition from "../animations/pageTransition";
 import ProductCard from "./ProductCard";
 import { Product } from "@/app/product-data";
 import { RefreshContext } from "@/app/context/refreshContext";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import CheckoutButton from "./CheckoutButton";
 
 // Create the RefreshContext
 
@@ -14,93 +17,169 @@ export default function ShoppingCart() {
   const [productIncart, setProductInCart] = useState<Product[]>([]);
   const [cartUpdated, setCartUpdated] = useState(false);
 
+  // Calculate cart total
+  const cartTotal = productIncart.reduce(
+    (total, product) => total + product.price,
+    0
+  );
+  const shipping = cartTotal > 100 ? 0 : 10;
+  const finalTotal = cartTotal + shipping;
+
   // Fetch the cart data
   async function fetchCart() {
-    if (!userId) return; // Ensure userId is available
+    if (!userId) return;
     try {
-      const response = await fetch(
-        `/api/users/${userId}/cart`,
-        { cache: "no-cache" }
-      );
+      const response = await fetch(`/api/users/${userId}/cart`, {
+        cache: "no-cache",
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch cart");
       }
       const cartData = await response.json();
       setProductInCart(cartData);
-      console.log("Cart", cartData);
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
   }
 
-  // Trigger fetchCart when userId or cartUpdated changes
   useEffect(() => {
     fetchCart();
   }, [userId, cartUpdated]);
 
-  // Function to refresh the cart manually
   const refreshCart = () => {
     setCartUpdated((prev) => !prev);
   };
 
-  // Loading state
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <svg
-          width='30'
-          height='30'
-          viewBox='0 0 48 48'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-          className='animate-spin'
-        >
-          <path
-            opacity='0.1'
-            fillRule='evenodd'
-            clipRule='evenodd'
-            d='M24 9C20.0218 9 16.2064 10.5804 13.3934 13.3934C10.5804 16.2064 9 20.0218 9 24C9 27.9782 10.5804 31.7936 13.3934 34.6066C16.2064 37.4196 20.0218 39 24 39C27.9782 39 31.7936 37.4196 34.6066 34.6066C37.4196 31.7936 39 27.9782 39 24C39 20.0218 37.4196 16.2064 34.6066 13.3934C31.7936 10.5804 27.9782 9 24 9ZM3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24Z'
-            fill='black'
-          />
-          <path
-            fillRule='evenodd'
-            clipRule='evenodd'
-            d='M24 9C20.1328 8.99173 16.4134 10.4854 13.626 13.166C13.0486 13.6999 12.2846 13.9857 11.4985 13.9619C10.7124 13.9381 9.96706 13.6065 9.42302 13.0386C8.87897 12.4707 8.57968 11.7118 8.58959 10.9255C8.59951 10.1391 8.91782 9.38801 9.47602 8.834C13.3801 5.08327 18.5862 2.99209 24 3C24.7957 3 25.5587 3.31607 26.1213 3.87868C26.6839 4.44129 27 5.20435 27 6C27 6.79565 26.6839 7.55871 26.1213 8.12132C25.5587 8.68393 24.7957 9 24 9Z'
-            fill='black'
-          />
-        </svg>
+      <div className='min-h-screen flex items-center justify-center'>
+        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
       </div>
-    ); // Show a loading state while cart data is being fetched
+    );
   }
 
-  // If the user is not logged in
   if (!session?.user?.id) {
-    return <div className='h-screen'>Login to view the Cart.</div>;
+    return (
+      <div className='min-h-screen flex flex-col items-center justify-center space-y-4 px-4 text-center'>
+        <h2 className='text-2xl font-bold'>Please Sign In</h2>
+        <p className='text-muted-foreground'>
+          You need to be logged in to view your cart
+        </p>
+        <Link
+          href='/auth/signin'
+          className='inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'
+        >
+          Sign In
+        </Link>
+      </div>
+    );
   }
 
-  if (session?.user?.id) {
-    console.log("SESSION IN Shopping Cart: ", session.user);
-    if (session?.user?.role === "user") {
-      return (
-        <RefreshContext.Provider value={refreshCart}>
-          <PageTransition>
-            <div
-              className={`${productIncart.length > 0 ? "w-full" : "w-9/12"} mt-1 h-auto`}
-            >
-              <div className='px-2 pt-1'>
-                <h1 className='text-2xl font-bold'>Carts</h1>
+  if (session?.user?.role === "user") {
+    return (
+      <RefreshContext.Provider value={refreshCart}>
+        <PageTransition>
+          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+            {/* Header */}
+            <div className='flex items-center justify-between mb-8'>
+              <div>
+                <h1 className='text-3xl font-bold'>Shopping Cart</h1>
+                <p className='text-muted-foreground mt-1'>
+                  {productIncart.length}{" "}
+                  {productIncart.length === 1 ? "item" : "items"} in your cart
+                </p>
               </div>
-              <div className='grid grid-cols-4 w-full mt-8 justify-center ml-auto mr-auto gap-12 justify-items-center'>
-                {productIncart.map((product) => (
-                  <ProductCard key={product._id} {...product} type='cart' />
-                ))}
-              </div>
+              <Link
+                href='/products'
+                className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground group'
+              >
+                <ArrowLeft className='w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1' />
+                Continue Shopping
+              </Link>
             </div>
-          </PageTransition>
-        </RefreshContext.Provider>
-      );
-    } else {
-      return <div>Hello</div>;
-    }
+
+            {productIncart.length === 0 ? (
+              <div className='text-center py-16 bg-secondary/20 rounded-xl'>
+                <h2 className='text-xl font-semibold mb-2'>
+                  Your cart is empty
+                </h2>
+                <p className='text-muted-foreground mb-6'>
+                  Looks like you haven&apos;t added any products to your cart
+                  yet
+                </p>
+                <Link
+                  href='/products'
+                  className='inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'
+                >
+                  Browse Products
+                </Link>
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+                {/* Cart Items */}
+                <div className='lg:col-span-2'>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+                    {productIncart.map((product) => (
+                      <ProductCard key={product._id} {...product} type='cart' />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cart Summary */}
+                <div className='lg:col-span-1'>
+                  <div className='bg-card rounded-xl p-6 shadow-sm border border-border/50 sticky top-8'>
+                    <h2 className='text-xl font-semibold mb-6'>Cart Summary</h2>
+
+                    <div className='space-y-4'>
+                      <div className='flex justify-between text-sm'>
+                        <span className='text-muted-foreground'>Subtotal</span>
+                        <span className='font-medium'>
+                          ${cartTotal.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div className='flex justify-between text-sm'>
+                        <span className='text-muted-foreground'>Shipping</span>
+                        <span className='font-medium'>
+                          {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                        </span>
+                      </div>
+
+                      {shipping > 0 && (
+                        <p className='text-xs text-muted-foreground'>
+                          Free shipping on orders over $100
+                        </p>
+                      )}
+
+                      <div className='border-t border-border/50 pt-4 mt-4'>
+                        <div className='flex justify-between'>
+                          <span className='font-semibold'>Total</span>
+                          <span className='font-bold text-lg text-primary'>
+                            ${finalTotal.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <CheckoutButton
+                        items={productIncart.map((product) => ({
+                          id: product._id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.imageUrl,
+                          quantity: 1,
+                        }))}
+                        className='mt-6'
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </PageTransition>
+      </RefreshContext.Provider>
+    );
   }
+
+  return null;
 }
