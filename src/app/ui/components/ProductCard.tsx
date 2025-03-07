@@ -39,8 +39,8 @@ export default function ProductCard({
     <div className='grid auto-rows-auto rounded-xl w-fit h-fit cursor-pointer p-2 hover:bg-secondary transition-all ease-in-out duration-300'>
       <Link href={`/products/` + productId} passHref>
         <Image
-          src={"/productsImage/" + imageUrl}
-          alt='product-image'
+          src={imageUrl}
+          alt={name}
           width={279}
           height={286.48}
           className='justify-self-center rounded-md w-full h-full'
