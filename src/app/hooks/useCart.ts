@@ -40,10 +40,9 @@ export default function useCart() {
     async function fetchCart() {
       if (userId) {
         try {
-          const response = await fetch(
-            process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
-            { cache: "no-cache" }
-          );
+          const response = await fetch(`/api/users/${userId}/cart`, {
+            cache: "no-cache",
+          });
 
           if (!response.ok) {
             throw new Error(`Failed to fetch cart: ${response.status}`);
@@ -80,16 +79,13 @@ export default function useCart() {
   async function addToCart(productId: string) {
     // console.log("PRODUCT ID: ", productId)
     if (userId) {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
-        {
-          method: "POST",
-          body: JSON.stringify({ productId }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/users/${userId}/cart`, {
+        method: "POST",
+        body: JSON.stringify({ productId }),
+        headers: { "Content-Type": "application/json" },
+      });
       const updatedCart = await response.json();
-      console.log("Updated Cart", updatedCart)
+      console.log("Updated Cart", updatedCart);
       setCart(updatedCart);
     }
   }
@@ -100,14 +96,11 @@ export default function useCart() {
 
   async function removeFromCart(productId: string) {
     if (userId) {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_SITE_URL + `/api/users/${userId}/cart`,
-        {
-          method: "DELETE",
-          body: JSON.stringify({ productId }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/users/${userId}/cart`, {
+        method: "DELETE",
+        body: JSON.stringify({ productId }),
+        headers: { "Content-Type": "application/json" },
+      });
       const updatedCart = await response.json();
       setCart(updatedCart);
     }
