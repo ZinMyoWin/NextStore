@@ -3,6 +3,7 @@
 import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
 import { toast } from "sonner";
 import PreviewProductCard from "./PreviewProdcutCard";
+import { Loader2 } from "lucide-react";
 
 interface FormData {
   productName: string;
@@ -12,14 +13,14 @@ interface FormData {
 }
 
 export default function AddProductForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     productName: "",
     shortDescription: "",
     price: "",
     image: null,
   });
-
-  // Create a ref for the file input
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (
@@ -29,10 +30,26 @@ export default function AddProductForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    console.log("File selected:", file?.name);
-    setFormData({ ...formData, image: file });
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (validateImageFile(file)) {
+        setFormData({ ...formData, image: file });
+      }
+    }
+  };
+
+  const validateImageFile = (file: File): boolean => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
+      toast.error("Image size should be less than 5MB");
+      return false;
+    }
+    return true;
   };
 
   const handleUploadImage = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -40,18 +57,54 @@ export default function AddProductForm() {
     fileInputRef.current?.click();
   };
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (isSubmitting) return;
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (validateImageFile(file)) {
+        setFormData({ ...formData, image: file });
+        // Update the file input value for consistency
+        if (fileInputRef.current) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInputRef.current.files = dataTransfer.files;
+        }
+      }
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isSubmitting) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     if (!formData.image) {
-      toast("Error", {
-        description: "Please upload an image.",
-      });
+      toast.error("Please upload an image");
       return;
     }
 
     try {
-      // Create FormData object for multipart/form-data submission
+      setIsSubmitting(true);
+      const loadingToast = toast.loading("Adding product...");
+
       const formDataToSend = new FormData();
       formDataToSend.append("productName", formData.productName);
       formDataToSend.append("shortDescription", formData.shortDescription);
@@ -60,7 +113,6 @@ export default function AddProductForm() {
 
       const response = await fetch("/api/product", {
         method: "POST",
-        // Remove the Content-Type header to let the browser set it with boundary
         body: formDataToSend,
       });
 
@@ -69,133 +121,173 @@ export default function AddProductForm() {
         throw new Error(errorData.error || "Failed to create product");
       }
 
-      // Reset the form state
+      // Reset form
       setFormData({
         productName: "",
         shortDescription: "",
         price: "",
         image: null,
       });
-
-      // Reset the file input value
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
 
-      toast("Success", {
-        description: "Product added successfully",
-      });
+      toast.dismiss(loadingToast);
+      toast.success("Product added successfully");
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast("Error", {
-        description:
-          error instanceof Error ? error.message : "Failed to create product",
-      });
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create product"
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // const toBase64 = (file: File): Promise<string> =>
-  //   new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       // console.log("File converted to base64:", reader.result);
-  //       resolve(reader.result as string);
-  //     };
-  //     reader.onerror = (error) => {
-  //       console.error("Error converting file to base64:", error);
-  //       reject(error);
-  //     };
-  //   });
-
   return (
-    <div className='grid grid-flow-col justify-items-center h-full bg-background'>
-      <form
-        onSubmit={handleSubmit}
-        className='h-full w-full bg-background rounded-md p-4 grid grid-cols-1 justify-items-start gap-2 '
-      >
-        <div className='gap-2 flex flex-col items-start p-1 w-full justify-center h-auto '>
-          <label className='font-medium'>Product Name</label>
-          <input
-            type='text'
-            name='productName'
-            className='h-1/2 rounded-sm bg-secondary text-text w-full'
-            value={formData.productName}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-center h-auto'>
-          <label className='font-medium'>Short Description</label>
-          <textarea
-            name='shortDescription'
-            value={formData.shortDescription}
-            className='h-1/2 rounded-sm bg-secondary text-text w-full resize-none'
-            onChange={handleInputChange}
-            maxLength={200}
-            required
-          ></textarea>
-        </div>
-        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-center h-auto'>
-          <label className='font-medium'>Price</label>
-
-          <input
-            type='number'
-            step='0.01'
-            name='price'
-            className='h-1/2 rounded-sm bg-secondary text-text w-full'
-            value={formData.price}
-            onChange={handleInputChange}
-            min={5}
-            required
-          />
-        </div>
-        <div className='gap-2 flex flex-col items-start  p-1 w-full justify-between h-fit'>
-          <div
-            onClick={handleUploadImage}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const files = e.dataTransfer.files;
-              if (files && files.length > 0) {
-                const file = files[0];
-                console.log("File dropped:", file.name);
-                setFormData({ ...formData, image: file });
-              }
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className='w-full cursor-pointer h-40 bg-secondary grid grid-cols-1 justify-items-center rounded-lg border-dashed border-2 group'
-          >
-            <button
-              type='submit'
-              className='group-hover:scale-110 transition-all ease-in-out'
-            >
-              Click or Drop to upload Image
-            </button>
+    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+      {/* Form Section */}
+      <div className='space-y-6'>
+        <form onSubmit={handleSubmit} className='space-y-6'>
+          {/* Product Name */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              Product Name
+            </label>
+            <input
+              type='text'
+              name='productName'
+              className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+              value={formData.productName}
+              onChange={handleInputChange}
+              placeholder='Enter product name'
+              disabled={isSubmitting}
+              required
+            />
           </div>
-          <input
-            type='file'
-            accept='image/*'
-            className='h-1/2 rounded-sm bg-secondary text-text w-full p-2'
-            onChange={handleFileChange}
-            ref={fileInputRef} // Attach the ref to the file input
-            required
-            hidden
-          />
+
+          {/* Description */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              Description
+            </label>
+            <textarea
+              name='shortDescription'
+              className='flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none'
+              value={formData.shortDescription}
+              onChange={handleInputChange}
+              placeholder='Enter product description'
+              maxLength={200}
+              disabled={isSubmitting}
+              required
+            />
+          </div>
+
+          {/* Price */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              Price
+            </label>
+            <div className='relative'>
+              <span className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground'>
+                $
+              </span>
+              <input
+                type='number'
+                step='0.01'
+                name='price'
+                className='flex h-10 w-full rounded-md border border-input bg-background pl-7 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                value={formData.price}
+                onChange={handleInputChange}
+                placeholder='0.00'
+                min={5}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Image Upload */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              Product Image
+            </label>
+            <div
+              onClick={!isSubmitting ? handleUploadImage : undefined}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`h-48 rounded-lg border-2 border-dashed transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : isSubmitting
+                  ? "border-border opacity-50 cursor-not-allowed"
+                  : "border-border hover:border-primary/50 hover:bg-secondary/50"
+              }`}
+            >
+              <div className='flex flex-col items-center gap-2 text-center'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-10 w-10 text-muted-foreground'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+                  />
+                </svg>
+                <p className='text-sm text-muted-foreground'>
+                  {formData.image
+                    ? formData.image.name
+                    : "Drop your image here, or click to select"}
+                </p>
+              </div>
+            </div>
+            <input
+              type='file'
+              accept='image/*'
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              className='hidden'
+              disabled={isSubmitting}
+              required
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type='submit'
+            disabled={isSubmitting}
+            className='inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 transition-colors'
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                Adding Product...
+              </>
+            ) : (
+              "Add Product"
+            )}
+          </button>
+        </form>
+      </div>
+
+      {/* Preview Section */}
+      <div className='lg:sticky lg:top-6'>
+        <div className='space-y-2 mb-4'>
+          <h2 className='text-lg font-semibold'>Preview</h2>
+          <p className='text-sm text-muted-foreground'>
+            This is how your product will appear in the store.
+          </p>
         </div>
-
-        <button
-          type='submit'
-          className='h-10 w-full  self-end bg-primary text-background mt-6 rounded-lg hover:scale-95 transition-all ease-in-out duration-300'
-        >
-          Add Product
-        </button>
-      </form>
-
-      <PreviewProductCard {...formData} />
+        <div className='bg-background rounded-lg border border-border p-4'>
+          <PreviewProductCard {...formData} />
+        </div>
+      </div>
     </div>
   );
 }
