@@ -44,67 +44,69 @@ export default function AddProductForm() {
     e.preventDefault();
 
     if (!formData.image) {
-      alert("Please upload an image.");
+      toast("Error", {
+        description: "Please upload an image.",
+      });
       return;
     }
 
     try {
-      const imageBase64 = await toBase64(formData.image);
+      // Create FormData object for multipart/form-data submission
+      const formDataToSend = new FormData();
+      formDataToSend.append("productName", formData.productName);
+      formDataToSend.append("shortDescription", formData.shortDescription);
+      formDataToSend.append("price", formData.price);
+      formDataToSend.append("image", formData.image);
 
-      const response = await fetch("/api/product/add-product", {
+      const response = await fetch("/api/product", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.productName, // Changed from `productName` to `name`
-          shortDescription: formData.shortDescription,
-          price: formData.price,
-          imageUrl: imageBase64,
-        }),
+        // Remove the Content-Type header to let the browser set it with boundary
+        body: formDataToSend,
       });
 
       if (!response.ok) {
-        const text = await response.text();
-        const errorData = text
-          ? JSON.parse(text)
-          : { error: "Unknown error occurred" };
-        alert(`Error: ${errorData.error}`);
-      } else {
-        toast("Product Added", {
-          description: "Product Added Successfully",
-        });
-
-        // Reset the form state
-        setFormData({
-          productName: "",
-          shortDescription: "",
-          price: "",
-          image: null,
-        });
-
-        // Reset the file input value
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ""; // Clear the file input
-        }
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create product");
       }
+
+      // Reset the form state
+      setFormData({
+        productName: "",
+        shortDescription: "",
+        price: "",
+        image: null,
+      });
+
+      // Reset the file input value
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      toast("Success", {
+        description: "Product added successfully",
+      });
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An unexpected error occurred. Please try again.");
+      toast("Error", {
+        description:
+          error instanceof Error ? error.message : "Failed to create product",
+      });
     }
   };
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // console.log("File converted to base64:", reader.result);
-        resolve(reader.result as string);
-      };
-      reader.onerror = (error) => {
-        console.error("Error converting file to base64:", error);
-        reject(error);
-      };
-    });
+  // const toBase64 = (file: File): Promise<string> =>
+  //   new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => {
+  //       // console.log("File converted to base64:", reader.result);
+  //       resolve(reader.result as string);
+  //     };
+  //     reader.onerror = (error) => {
+  //       console.error("Error converting file to base64:", error);
+  //       reject(error);
+  //     };
+  //   });
 
   return (
     <div className='grid grid-flow-col justify-items-center h-full bg-background'>
