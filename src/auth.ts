@@ -6,6 +6,7 @@ import client, { connectToDB } from "@/app/api/db";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { User } from "@/app/models/User";
+import { authConfig } from "./auth.config";
 
 interface CustomUser {
   id?: string;
@@ -25,7 +26,8 @@ interface CustomSession {
   };
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: MongoDBAdapter(client),
   session: {
     strategy: "jwt",
@@ -70,6 +72,7 @@ export const { auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async signIn({ user, account }) {
       const { db } = await connectToDB();
 
@@ -100,7 +103,7 @@ export const { auth, signIn, signOut } = NextAuth({
           if (!existingUser.role) {
             const role = [
               "mgzinmyowin12@gmail.com",
-              "your.second.email@gmail.com",
+              "kaunghtikes726@gmail.com",
             ].includes(user.email!)
               ? "admin"
               : "user";

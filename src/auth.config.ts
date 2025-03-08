@@ -1,10 +1,10 @@
 import type { NextAuthConfig } from "next-auth";
-import type { DefaultSession } from "next-auth";
+import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { User } from "@/app/models/User";
-import { connectToDB } from "@/app/lib/db";
+import { connectToDB } from "@/app/api/db";
 
 declare module "next-auth" {
   interface User {
@@ -31,7 +31,21 @@ export const authConfig = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.role = token.role as string | undefined;
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+    async authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       if (isOnDashboard) {
@@ -42,22 +56,12 @@ export const authConfig = {
       }
       return true;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.role = token.role;
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
   },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z

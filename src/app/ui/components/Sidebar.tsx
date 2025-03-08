@@ -10,12 +10,14 @@ import CartInactive from "../../../../public/icons/cart-unfilled.svg";
 import Login from "../../../../public/icons/login.svg";
 import Image from "next/image";
 import useCart from "@/app/hooks/useCart";
+import { useSidebar } from "@/app/store/use-sidebar";
 
 // Define the type for the hovered icon
 type HoveredIcon = "home" | "product" | "cart" | "logout" | "login" | null;
 
 export default function Sidebar() {
   const { session } = useCart();
+  const { isOpen, toggle } = useSidebar();
   const [hoveredIcon, setHoveredIcon] = useState<HoveredIcon>(null);
 
   const handleMouseEnter = (iconName: HoveredIcon) => {
@@ -27,113 +29,159 @@ export default function Sidebar() {
   };
 
   return (
-    <div className='w-64 bg-background text-text h-screen fixed left-0 top-0 shadow-xl border-r border-border'>
-      <div className='p-6 flex flex-col h-screen'>
-        <div className='flex items-center gap-3 mb-12 px-2'>
-          <h1 className='text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent'>
-            NexE
-          </h1>
-        </div>
-        <nav className='w-full mt-2 h-auto'>
-          <ul className='flex flex-col space-y-1.5'>
-            {session?.user?.role !== "admin" && (
-              <li
-                className='group'
-                onMouseEnter={() => handleMouseEnter("home")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Link
-                  className='flex flex-row items-center justify-between gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-secondary/50 group-hover:translate-x-1'
-                  href='/'
-                >
-                  <Image
-                    src={hoveredIcon === "home" ? HomeActive : HomeInactive}
-                    alt='Home Icon'
-                    className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                  />
-                  <p className='w-3/4 text-[15px] font-medium'>Home</p>
-                </Link>
-              </li>
-            )}
-            <li
-              className='group'
-              onMouseEnter={() => handleMouseEnter("product")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link
-                href='/products'
-                className='flex flex-row items-center justify-between gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-secondary/50 group-hover:translate-x-1'
-              >
-                <Image
-                  src={
-                    hoveredIcon === "product" ? ProductActive : ProductInactive
-                  }
-                  alt='Product Icon'
-                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                />
-                <p className='w-3/4 text-[15px] font-medium'>Products</p>
-              </Link>
-            </li>
-            {session?.user?.role === "user" && (
-              <li
-                className='group'
-                onMouseEnter={() => handleMouseEnter("cart")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Link
-                  href='/cart'
-                  className='flex flex-row items-center justify-between gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-secondary/50 group-hover:translate-x-1'
-                >
-                  <Image
-                    src={hoveredIcon === "cart" ? CartActive : CartInactive}
-                    alt='Cart Icon'
-                    className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                  />
-                  <p className='w-3/4 text-[15px] font-medium'>Cart</p>
-                </Link>
-              </li>
-            )}
-          </ul>
-        </nav>
-        <div className='flex flex-col space-y-1.5 mt-auto pt-6 border-t border-border'>
-          {session?.user ? (
-            <div
-              className='group'
-              onMouseEnter={() => handleMouseEnter("logout")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link
-                href='/auth/signout'
-                className='flex flex-row items-center justify-between gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-secondary/50 group-hover:translate-x-1'
-              >
-                <Image
-                  src={Login}
-                  alt='Logout Icon'
-                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                />
-                <p className='w-3/4 text-[15px] font-medium'>Log Out</p>
-              </Link>
+    <div
+      className={`${
+        isOpen ? "w-64" : "w-20"
+      } bg-background text-text h-screen fixed left-0 top-0 border-r border-border flex flex-col transition-all duration-300 ease-in-out z-50`}
+    >
+      {/* Logo and Toggle Section */}
+      <div className='h-16 px-4 border-b border-border flex items-center justify-between'>
+        <div className='flex-1 flex items-center justify-center'>
+          {!isOpen ? (
+            <div className='w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center'>
+              <span className='text-xl font-bold text-primary'>N</span>
             </div>
           ) : (
-            <div
-              className='group'
-              onMouseEnter={() => handleMouseEnter("login")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link
-                href='/auth/signin'
-                className='flex flex-row items-center justify-between gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-secondary/50 group-hover:translate-x-1'
-              >
-                <Image
-                  src={Login}
-                  alt='Login Icon'
-                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                />
-                <p className='w-3/4 text-[15px] font-medium'>Login</p>
-              </Link>
+            <div className='flex items-center gap-3'>
+              <span className='text-xl font-semibold'>NextStore</span>
             </div>
           )}
         </div>
+        <button
+          onClick={toggle}
+          className='-mr-9 w-10 h-10 rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center'
+        >
+          <svg
+            className='w-5 h-5'
+            viewBox='0 0 24 24'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            {isOpen ? (
+              // Collapse icon (rectangle with arrow pointing left)
+              <path
+                d='M20 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20H20C20.5523 20 21 19.5523 21 19V5C21 4.44772 20.5523 4 20 4ZM13 12L9 8M9 16L13 12'
+                stroke='currentColor'
+                strokeWidth={1.5}
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            ) : (
+              // Expand icon (rectangle with hamburger menu)
+              <path
+                d='M20 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20H20C20.5523 20 21 19.5523 21 19V5C21 4.44772 20.5523 4 20 4ZM7 8H17M7 12H17M7 16H17'
+                stroke='currentColor'
+                strokeWidth={1.5}
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Main Navigation */}
+      <nav className='flex-1 py-4'>
+        <ul className='space-y-2'>
+          {session?.user?.role !== "admin" && (
+            <li
+              className='group px-3'
+              onMouseEnter={() => handleMouseEnter("home")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+                href='/'
+              >
+                <Image
+                  src={hoveredIcon === "home" ? HomeActive : HomeInactive}
+                  alt='Home'
+                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+                />
+                {isOpen && <span className='text-sm font-medium'>Home</span>}
+              </Link>
+            </li>
+          )}
+          <li
+            className='group px-3'
+            onMouseEnter={() => handleMouseEnter("product")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Link
+              href='/products'
+              className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+            >
+              <Image
+                src={
+                  hoveredIcon === "product" ? ProductActive : ProductInactive
+                }
+                alt='Products'
+                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              />
+              {isOpen && <span className='text-sm font-medium'>Products</span>}
+            </Link>
+          </li>
+          {session?.user?.role === "user" && (
+            <li
+              className='group px-3'
+              onMouseEnter={() => handleMouseEnter("cart")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                href='/cart'
+                className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+              >
+                <Image
+                  src={hoveredIcon === "cart" ? CartActive : CartInactive}
+                  alt='Cart'
+                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+                />
+                {isOpen && <span className='text-sm font-medium'>Cart</span>}
+              </Link>
+            </li>
+          )}
+        </ul>
+      </nav>
+
+      {/* Bottom Section */}
+      <div className='p-3 border-t border-border'>
+        {session?.user ? (
+          <div
+            className='group'
+            onMouseEnter={() => handleMouseEnter("logout")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Link
+              href='/auth/signout'
+              className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+            >
+              <Image
+                src={Login}
+                alt='Logout'
+                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              />
+              {isOpen && <span className='text-sm font-medium'>Log Out</span>}
+            </Link>
+          </div>
+        ) : (
+          <div
+            className='group'
+            onMouseEnter={() => handleMouseEnter("login")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Link
+              href='/auth/signin'
+              className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+            >
+              <Image
+                src={Login}
+                alt='Login'
+                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              />
+              {isOpen && <span className='text-sm font-medium'>Login</span>}
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
