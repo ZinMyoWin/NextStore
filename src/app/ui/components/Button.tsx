@@ -25,7 +25,8 @@ export default function AddToCart({ productId }: cartItemProps) {
 
   useEffect(() => {
     // This ensures the button status is updated when the cart changes
-  }, [productIsInCart(productId)]);
+    // Intentionally empty - dependency is used for tracking only
+  }, [productIsInCart, productId]);
 
   if (isLoading) {
     return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import useCart from "@/app/hooks/useCart";
 import PageTransition from "../animations/pageTransition";
 import ProductCard from "./ProductCard";
@@ -26,25 +26,26 @@ export default function ShoppingCart() {
   const finalTotal = cartTotal + shipping;
 
   // Fetch the cart data
-  async function fetchCart() {
-    if (!userId) return;
+  const fetchCart = useCallback(async () => {
     try {
-      const response = await fetch(`/api/users/${userId}/cart`, {
-        cache: "no-cache",
-      });
+      if (!userId) return;
+
+      const response = await fetch(`/api/users/${userId}/cart`);
+
       if (!response.ok) {
         throw new Error("Failed to fetch cart");
       }
-      const cartData = await response.json();
-      setProductInCart(cartData);
+
+      const data = await response.json();
+      setProductInCart(data);
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
-  }
+  }, [userId]);
 
   useEffect(() => {
     fetchCart();
-  }, [userId, cartUpdated]);
+  }, [fetchCart, cartUpdated]);
 
   const refreshCart = () => {
     setCartUpdated((prev) => !prev);

@@ -65,10 +65,13 @@ export default function CheckoutButton({
       if (error) {
         throw error;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Checkout error:", error);
       toast.error("Checkout Error", {
-        description: error.message || "Failed to initiate checkout",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to initiate checkout",
       });
     } finally {
       setIsLoading(false);

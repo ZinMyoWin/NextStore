@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { FormEvent } from "react";
 
 export default function Footer() {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // You can add newsletter subscription logic here
+    console.log("Newsletter subscription submitted");
+  };
+
   return (
     <footer className='w-full border-t border-border bg-background'>
       <div className='container mx-auto px-4 py-12'>
@@ -17,6 +26,9 @@ export default function Footer() {
               <a
                 href='https://twitter.com'
                 className='text-muted-foreground hover:text-primary transition-colors'
+                aria-label='Twitter'
+                rel='noopener noreferrer'
+                target='_blank'
               >
                 <svg
                   className='w-5 h-5'
@@ -30,6 +42,9 @@ export default function Footer() {
               <a
                 href='https://facebook.com'
                 className='text-muted-foreground hover:text-primary transition-colors'
+                aria-label='Facebook'
+                rel='noopener noreferrer'
+                target='_blank'
               >
                 <svg
                   className='w-5 h-5'
@@ -47,6 +62,9 @@ export default function Footer() {
               <a
                 href='https://instagram.com'
                 className='text-muted-foreground hover:text-primary transition-colors'
+                aria-label='Instagram'
+                rel='noopener noreferrer'
+                target='_blank'
               >
                 <svg
                   className='w-5 h-5'
@@ -148,15 +166,17 @@ export default function Footer() {
             <p className='text-sm text-muted-foreground mb-4'>
               Subscribe to our newsletter for the latest products and deals.
             </p>
-            <form className='space-y-2'>
+            <form className='space-y-2' onSubmit={handleSubmit}>
               <input
                 type='email'
                 placeholder='Enter your email'
                 className='w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all'
+                aria-label='Email for newsletter'
               />
               <button
                 type='submit'
                 className='w-full bg-primary text-primary-foreground px-3 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors'
+                aria-label='Subscribe to newsletter'
               >
                 Subscribe
               </button>
