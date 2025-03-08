@@ -1,9 +1,30 @@
 import type { NextAuthConfig } from "next-auth";
+import type { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { User } from "@/app/models/User";
 import { connectToDB } from "@/app/lib/db";
+
+declare module "next-auth" {
+  interface User {
+    role?: string;
+    id?: string;
+  }
+  interface Session {
+    user: {
+      role?: string;
+      id?: string;
+    } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+    id?: string;
+  }
+}
 
 export const authConfig = {
   pages: {
@@ -31,7 +52,7 @@ export const authConfig = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.role = token.role;
-        session.user.id = token.id;
+        session.user.id = token.id as string;
       }
       return session;
     },
