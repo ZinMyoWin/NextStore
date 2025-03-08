@@ -80,8 +80,12 @@ export const { auth, signIn, signOut } = NextAuth({
           .findOne({ email: user.email });
 
         if (!existingUser) {
-          const role =
-            user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user";
+          const role = [
+            "mgzinmyowin12@gmail.com",
+            "kaunghtikes726@gmail.com",
+          ].includes(user.email!)
+            ? "admin"
+            : "user";
           const result = await db.collection("users").insertOne({
             name: user.name,
             email: user.email,
@@ -94,8 +98,12 @@ export const { auth, signIn, signOut } = NextAuth({
           user.role = role;
         } else {
           if (!existingUser.role) {
-            const role =
-              user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user";
+            const role = [
+              "mgzinmyowin12@gmail.com",
+              "your.second.email@gmail.com",
+            ].includes(user.email!)
+              ? "admin"
+              : "user";
             await db
               .collection("users")
               .updateOne({ _id: existingUser._id }, { $set: { role: role } });
