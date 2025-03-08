@@ -24,11 +24,6 @@ interface CheckoutButtonProps {
   className?: string;
 }
 
-interface StripeError {
-  message: string;
-  // Add other properties that might be in the error object
-}
-
 export default function CheckoutButton({
   items,
   className = "",
@@ -70,9 +65,11 @@ export default function CheckoutButton({
       if (error) {
         throw error;
       }
-    } catch (error: unknown) {
-      const stripeError = error as StripeError;
-      toast.error(stripeError.message || 'An error occurred');
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error("Checkout Error", {
+        description: error.message || "Failed to initiate checkout",
+      });
     } finally {
       setIsLoading(false);
     }
