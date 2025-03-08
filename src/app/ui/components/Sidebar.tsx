@@ -38,12 +38,14 @@ export default function Sidebar() {
       <div className='h-16 px-4 border-b border-border flex items-center justify-between'>
         <div className='flex-1 flex items-center justify-center'>
           {!isOpen ? (
-            <div className='w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center'>
-              <span className='text-xl font-bold text-primary'>N</span>
+            <div className='w-10 h-10 bg-gradient-to-r from-primary to-primary/60 rounded-lg flex items-center justify-center'>
+              <span className='text-xl font-bold text-background'>N</span>
             </div>
           ) : (
             <div className='flex items-center gap-3'>
-              <span className='text-xl font-semibold'>NextStore</span>
+              <span className='text-xl font-semibold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent'>
+                NextStore
+              </span>
             </div>
           )}
         </div>
@@ -60,7 +62,7 @@ export default function Sidebar() {
             {isOpen ? (
               // Collapse icon (rectangle with arrow pointing left)
               <path
-                d='M20 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20H20C20.5523 20 21 19.5523 21 19V5C21 4.44772 20.5523 4 20 4ZM13 12L9 8M9 16L13 12'
+                d='M4 4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4ZM11 12L15 8M15 16L11 12'
                 stroke='currentColor'
                 strokeWidth={1.5}
                 strokeLinecap='round'

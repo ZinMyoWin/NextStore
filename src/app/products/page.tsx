@@ -7,7 +7,7 @@ export default async function ProductsPage() {
   
 
   return (
-    <PageTransition>
+    
       <div className=' mt-1 '>
         {/* <div className='px-2 pt-1'>
           <h1 className='text-2xl font-bold'>Products</h1>
@@ -15,6 +15,6 @@ export default async function ProductsPage() {
 
         <ProductsList/>
       </div>
-    </PageTransition>
+  
   );
 }

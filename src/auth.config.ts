@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
+import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
@@ -31,6 +32,52 @@ export const authConfig = {
     signIn: "/auth/signin",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      const { db } = await connectToDB();
+
+      if (account?.provider === "google") {
+        const existingUser = await db
+          .collection("users")
+          .findOne({ email: user.email });
+
+        if (!existingUser) {
+          const role = [
+            "mgzinmyowin12@gmail.com",
+            "kaunghtikes726@gmail.com",
+          ].includes(user.email!)
+            ? "admin"
+            : "user";
+          const result = await db.collection("users").insertOne({
+            name: user.name,
+            email: user.email,
+            provider: account.provider,
+            providerId: account.providerAccountId,
+            image: user.image,
+            role: role,
+          });
+          user.id = result.insertedId.toString();
+          user.role = role;
+        } else {
+          if (!existingUser.role) {
+            const role = [
+              "mgzinmyowin12@gmail.com",
+              "kaunghtikes726@gmail.com",
+            ].includes(user.email!)
+              ? "admin"
+              : "user";
+            await db
+              .collection("users")
+              .updateOne({ _id: existingUser._id }, { $set: { role: role } });
+            user.role = role;
+          } else {
+            user.role = existingUser.role;
+          }
+          user.id = existingUser._id.toString();
+        }
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
@@ -40,7 +87,7 @@ export const authConfig = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.role = token.role as string | undefined;
+        session.user.role = token.role as string;
         session.user.id = token.id as string;
       }
       return session;

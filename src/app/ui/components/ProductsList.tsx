@@ -125,11 +125,39 @@ export default function ProductsList() {
 
   if (isLoading) {
     return (
-      <div className='container mx-auto px-4 py-8'>
+      <div className='min-h-screen max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+        {/* Loading Header */}
+        <div className='flex flex-col gap-4 mb-8 animate-pulse'>
+          <div className='flex items-center justify-between'>
+            <div className='h-8 w-32 bg-secondary rounded-lg'></div>
+            <div className='h-10 w-32 bg-secondary rounded-lg'></div>
+          </div>
+
+          {/* Loading Search Bar */}
+          <div className='flex flex-col sm:flex-row gap-3'>
+            <div className='flex-1 h-11 bg-secondary rounded-lg'></div>
+            <div className='h-11 w-28 bg-secondary rounded-lg'></div>
+          </div>
+        </div>
+
+        {/* Loading Products Grid */}
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className='w-full'>
-              <div className='animate-pulse bg-secondary h-[400px] rounded-xl' />
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className='animate-pulse space-y-4'>
+              {/* Image placeholder */}
+              <div className='aspect-[3/4] w-full bg-secondary rounded-xl'></div>
+              {/* Title placeholder */}
+              <div className='h-6 bg-secondary rounded-lg w-3/4'></div>
+              {/* Description placeholder */}
+              <div className='space-y-2'>
+                <div className='h-4 bg-secondary rounded-lg w-full'></div>
+                <div className='h-4 bg-secondary rounded-lg w-2/3'></div>
+              </div>
+              {/* Price and button placeholder */}
+              <div className='flex items-center justify-between pt-2'>
+                <div className='h-6 bg-secondary rounded-lg w-20'></div>
+                <div className='h-9 bg-secondary rounded-lg w-28'></div>
+              </div>
             </div>
           ))}
         </div>

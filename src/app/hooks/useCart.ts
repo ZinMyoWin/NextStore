@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
-  name?: string;
-  email?: string;
-  image?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
   role?: string;
 };
 
@@ -20,15 +20,28 @@ export default function useCart() {
   const [cart, setCart] = useState<Product[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserSession() {
-      const response = await fetch("/api/auth/session", { cache: "no-store" });
-      const session = await response.json();
-      if (session?.user?.id) {
-        setSession(session);
-        setUserId(session.user.id);
+      try {
+        const response = await fetch("/api/auth/session", { 
+          cache: "no-store",
+          credentials: "include"
+        });
+        const data = await response.json();
+        
+        if (data?.user) {
+          setSession(data);
+          setUserId(data.user.id);
+        } else {
+          setSession(null);
+          setUserId(null);
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+        setSession(null);
+        setUserId(null);
       }
     }
     fetchUserSession();
@@ -42,6 +55,7 @@ export default function useCart() {
         try {
           const response = await fetch(`/api/users/${userId}/cart`, {
             cache: "no-cache",
+            credentials: "include"
           });
 
           if (!response.ok) {
@@ -52,40 +66,36 @@ export default function useCart() {
           setCart(cart);
         } catch (error) {
           console.error("Error fetching cart:", error);
-          // Optionally, you can set an error state here
         } finally {
-          // Wait for 2 seconds before setting isLoading to false
           timeoutId = setTimeout(() => {
             setIsLoading(false);
-          }, 1000);
+          }, 300);
         }
       } else {
         timeoutId = setTimeout(() => {
           setIsLoading(false);
-        }, 1000); // If no userId, ensure loading is set to false immediately
+        }, 300);
       }
     }
 
     fetchCart();
 
-    // Cleanup function
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId); // Clear the timeout if the component unmounts
+        clearTimeout(timeoutId);
       }
     };
   }, [userId]);
 
   async function addToCart(productId: string) {
-    // console.log("PRODUCT ID: ", productId)
     if (userId) {
       const response = await fetch(`/api/users/${userId}/cart`, {
         method: "POST",
         body: JSON.stringify({ productId }),
         headers: { "Content-Type": "application/json" },
+        credentials: "include"
       });
       const updatedCart = await response.json();
-      console.log("Updated Cart", updatedCart);
       setCart(updatedCart);
     }
   }
@@ -100,6 +110,7 @@ export default function useCart() {
         method: "DELETE",
         body: JSON.stringify({ productId }),
         headers: { "Content-Type": "application/json" },
+        credentials: "include"
       });
       const updatedCart = await response.json();
       setCart(updatedCart);
