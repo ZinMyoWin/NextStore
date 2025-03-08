@@ -1,5 +1,5 @@
 // app/api/auth/session/route.ts
-import { auth } from "@/auth";
+import { auth } from "../../../../../auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
