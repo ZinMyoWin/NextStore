@@ -1,7 +1,24 @@
+/**
+ * Cart Management Hook
+ * 
+ * This custom hook manages the shopping cart functionality for the application.
+ * It handles user session, cart state, and cart operations.
+ * 
+ * Features:
+ * - User session management
+ * - Cart state management
+ * - Add/Remove items from cart
+ * - Cart authentication checks
+ * - Loading states for operations
+ * 
+ * @returns {Object} Cart management functions and state
+ */
+
 import { useEffect, useState } from "react";
 import { Product } from "../product-data";
 import { useRouter } from "next/navigation";
 
+// Type definitions for user and session
 type User = {
   id: string;
   name?: string | null;
@@ -22,6 +39,7 @@ export default function useCart() {
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch user session on mount
   useEffect(() => {
     async function fetchUserSession() {
       try {
@@ -47,6 +65,7 @@ export default function useCart() {
     fetchUserSession();
   }, []);
 
+  // Fetch cart data when userId changes
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
@@ -87,6 +106,10 @@ export default function useCart() {
     };
   }, [userId]);
 
+  /**
+   * Add a product to the cart
+   * @param {string} productId - The ID of the product to add
+   */
   async function addToCart(productId: string) {
     if (userId) {
       const response = await fetch(`/api/users/${userId}/cart`, {
@@ -100,10 +123,19 @@ export default function useCart() {
     }
   }
 
+  /**
+   * Check if a product is already in the cart
+   * @param {string} productId - The ID of the product to check
+   * @returns {boolean} True if the product is in the cart
+   */
   function productIsInCart(productId: string) {
     return cart.some((cartItem) => cartItem._id === productId);
   }
 
+  /**
+   * Remove a product from the cart
+   * @param {string} productId - The ID of the product to remove
+   */
   async function removeFromCart(productId: string) {
     if (userId) {
       const response = await fetch(`/api/users/${userId}/cart`, {
@@ -117,6 +149,11 @@ export default function useCart() {
     }
   }
 
+  /**
+   * Check authentication and handle cart addition
+   * Redirects to sign in if user is not authenticated
+   * @param {string} productId - The ID of the product to add
+   */
   function checkAuthentication(productId: string) {
     if (session?.user) {
       setIsLoading(true);

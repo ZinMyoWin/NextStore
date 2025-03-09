@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "../db";
 import { v2 as cloudinary } from "cloudinary";
-import { auth } from "@/auth";
+import { auth } from "../../../../auth";
 
 // Configure Cloudinary
 cloudinary.config({

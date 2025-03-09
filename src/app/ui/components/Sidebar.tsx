@@ -11,6 +11,7 @@ import Login from "../../../../public/icons/login.svg";
 import Image from "next/image";
 import useCart from "@/app/hooks/useCart";
 import { useSidebar } from "@/app/store/use-sidebar";
+import { PanelRight, PanelLeftClose } from "lucide-react";
 
 // Define the type for the hovered icon
 type HoveredIcon = "home" | "product" | "cart" | "logout" | "login" | null;
@@ -53,57 +54,36 @@ export default function Sidebar() {
           onClick={toggle}
           className='-mr-9 w-10 h-10 rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center'
         >
-          <svg
-            className='w-5 h-5'
-            viewBox='0 0 24 24'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            {isOpen ? (
-              // Collapse icon (rectangle with arrow pointing left)
-              <path
-                d='M4 4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4ZM11 12L15 8M15 16L11 12'
-                stroke='currentColor'
-                strokeWidth={1.5}
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            ) : (
-              // Expand icon (rectangle with hamburger menu)
-              <path
-                d='M20 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20H20C20.5523 20 21 19.5523 21 19V5C21 4.44772 20.5523 4 20 4ZM7 8H17M7 12H17M7 16H17'
-                stroke='currentColor'
-                strokeWidth={1.5}
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            )}
-          </svg>
+          {isOpen ? (
+            // Collapse icon (rectangle with arrow pointing left)
+            <PanelLeftClose className='w-5 h-5' />
+          ) : (
+            // Expand icon (rectangle with hamburger menu)
+            <PanelRight className='w-5 h-5' />
+          )}
         </button>
       </div>
 
       {/* Main Navigation */}
       <nav className='flex-1 py-4'>
         <ul className='space-y-2'>
-          {session?.user?.role !== "admin" && (
-            <li
-              className='group px-3'
-              onMouseEnter={() => handleMouseEnter("home")}
-              onMouseLeave={handleMouseLeave}
+          <li
+            className='group px-3'
+            onMouseEnter={() => handleMouseEnter("home")}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Link
+              className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+              href='/'
             >
-              <Link
-                className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
-                href='/'
-              >
-                <Image
-                  src={hoveredIcon === "home" ? HomeActive : HomeInactive}
-                  alt='Home'
-                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
-                />
-                {isOpen && <span className='text-sm font-medium'>Home</span>}
-              </Link>
-            </li>
-          )}
+              <Image
+                src={hoveredIcon === "home" ? HomeActive : HomeInactive}
+                alt='Home'
+                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              />
+              {isOpen && <span className='text-sm font-medium'>Home</span>}
+            </Link>
+          </li>
           <li
             className='group px-3'
             onMouseEnter={() => handleMouseEnter("product")}

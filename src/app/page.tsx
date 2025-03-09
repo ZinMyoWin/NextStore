@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "../../auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -15,15 +15,6 @@ import Image from "next/image";
 
 export default async function Home() {
   const session = await auth();
-
-  // If user is admin, redirect to products page
-  if (
-    session?.user &&
-    "role" in session.user &&
-    session.user.role === "admin"
-  ) {
-    redirect("/products");
-  }
 
   const features = [
     {
