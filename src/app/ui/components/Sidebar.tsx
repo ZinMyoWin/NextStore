@@ -1,20 +1,28 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import HomeActive from "../../../../public/icons/home-active.svg";
-import HomeInactive from "../../../../public/icons/home-inactive.svg";
-import ProductActive from "../../../../public/icons/product-active.svg";
-import ProductInactive from "../../../../public/icons/product-inactive.svg";
-import CartActive from "../../../../public/icons/cart-filled.svg";
-import CartInactive from "../../../../public/icons/cart-unfilled.svg";
-import Login from "../../../../public/icons/login.svg";
-import Image from "next/image";
+import {
+  PanelRight,
+  PanelLeftClose,
+  User,
+  Home,
+  ShoppingBag,
+  ShoppingCart,
+  LogIn,
+  LogOut,
+} from "lucide-react";
 import useCart from "@/app/hooks/useCart";
 import { useSidebar } from "@/app/store/use-sidebar";
-import { PanelRight, PanelLeftClose } from "lucide-react";
 
 // Define the type for the hovered icon
-type HoveredIcon = "home" | "product" | "cart" | "logout" | "login" | null;
+type HoveredIcon =
+  | "home"
+  | "product"
+  | "cart"
+  | "logout"
+  | "login"
+  | "dashboard"
+  | null;
 
 export default function Sidebar() {
   const { session } = useCart();
@@ -55,10 +63,8 @@ export default function Sidebar() {
           className='-mr-9 w-10 h-10 rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center'
         >
           {isOpen ? (
-            // Collapse icon (rectangle with arrow pointing left)
             <PanelLeftClose className='w-5 h-5' />
           ) : (
-            // Expand icon (rectangle with hamburger menu)
             <PanelRight className='w-5 h-5' />
           )}
         </button>
@@ -76,10 +82,12 @@ export default function Sidebar() {
               className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
               href='/'
             >
-              <Image
-                src={hoveredIcon === "home" ? HomeActive : HomeInactive}
-                alt='Home'
-                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              <Home
+                className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                  hoveredIcon === "home"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               />
               {isOpen && <span className='text-sm font-medium'>Home</span>}
             </Link>
@@ -93,12 +101,12 @@ export default function Sidebar() {
               href='/products'
               className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
             >
-              <Image
-                src={
-                  hoveredIcon === "product" ? ProductActive : ProductInactive
-                }
-                alt='Products'
-                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              <ShoppingBag
+                className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                  hoveredIcon === "product"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               />
               {isOpen && <span className='text-sm font-medium'>Products</span>}
             </Link>
@@ -113,12 +121,37 @@ export default function Sidebar() {
                 href='/cart'
                 className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
               >
-                <Image
-                  src={hoveredIcon === "cart" ? CartActive : CartInactive}
-                  alt='Cart'
-                  className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+                <ShoppingCart
+                  className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                    hoveredIcon === "cart"
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
                 />
                 {isOpen && <span className='text-sm font-medium'>Cart</span>}
+              </Link>
+            </li>
+          )}
+          {session?.user && (
+            <li
+              className='group px-3'
+              onMouseEnter={() => handleMouseEnter("dashboard")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                href='/dashboard'
+                className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+              >
+                <User
+                  className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                    hoveredIcon === "dashboard"
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                />
+                {isOpen && (
+                  <span className='text-sm font-medium'>Dashboard</span>
+                )}
               </Link>
             </li>
           )}
@@ -137,10 +170,12 @@ export default function Sidebar() {
               href='/auth/signout'
               className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
             >
-              <Image
-                src={Login}
-                alt='Logout'
-                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              <LogOut
+                className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                  hoveredIcon === "logout"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               />
               {isOpen && <span className='text-sm font-medium'>Log Out</span>}
             </Link>
@@ -155,10 +190,12 @@ export default function Sidebar() {
               href='/auth/signin'
               className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
             >
-              <Image
-                src={Login}
-                alt='Login'
-                className='w-5 h-5 transition-transform duration-200 group-hover:scale-110'
+              <LogIn
+                className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                  hoveredIcon === "login"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               />
               {isOpen && <span className='text-sm font-medium'>Login</span>}
             </Link>
