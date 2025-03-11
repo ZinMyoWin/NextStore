@@ -6,7 +6,7 @@ import useCart from "@/app/hooks/useCart";
 import DeleteInactive from "../../../../public/icons/delete-inactive.svg";
 import DeleteActive from "../../../../public/icons/delete-active.svg";
 import { useState } from "react";
-import { ConfirmationAlert } from "./AlertDialog";
+import { ProductDeleteConfirmationAlert } from "./AlertDialog";
 
 interface CartItem {
   _id: string;
@@ -109,7 +109,7 @@ export default function ProductCard({
                       />
                     </svg>
                   </Link>
-                  <ConfirmationAlert
+                  <ProductDeleteConfirmationAlert
                     setDeleteActive={setDeleteActive}
                     deleteActive={deleteActive}
                     productId={productId}

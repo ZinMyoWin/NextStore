@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   LogIn,
   LogOut,
+  UserRoundPen 
 } from "lucide-react";
 import useCart from "@/app/hooks/useCart";
 import { useSidebar } from "@/app/store/use-sidebar";
@@ -22,6 +23,7 @@ type HoveredIcon =
   | "logout"
   | "login"
   | "dashboard"
+  |"user"
   | null;
 
 export default function Sidebar() {
@@ -132,7 +134,7 @@ export default function Sidebar() {
               </Link>
             </li>
           )}
-          {session?.user && (
+          {session?.user?.role === 'user' && (
             <li
               className='group px-3'
               onMouseEnter={() => handleMouseEnter("dashboard")}
@@ -151,6 +153,29 @@ export default function Sidebar() {
                 />
                 {isOpen && (
                   <span className='text-sm font-medium'>Dashboard</span>
+                )}
+              </Link>
+            </li>
+          )}
+          {session?.user && (
+            <li
+              className='group px-3'
+              onMouseEnter={() => handleMouseEnter("user")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                href='/users'
+                className='w-full h-10 flex items-center gap-3 px-2 rounded-lg transition-all duration-200 hover:bg-secondary/50'
+              >
+                <UserRoundPen
+                  className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+                    hoveredIcon === "user"
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                />
+                {isOpen && (
+                  <span className='text-sm font-medium'>Users</span>
                 )}
               </Link>
             </li>
