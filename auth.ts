@@ -5,34 +5,6 @@ import client, { connectToDB } from "@/app/api/db";
 import { Adapter } from "next-auth/adapters";
 import { JWT } from "next-auth/jwt";
 
-interface CustomUser extends User {
-  id?: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  role?: string;
-}
-
-interface CustomSession extends Session {
-  user: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: string;
-  };
-}
-
-interface CustomJwt extends JWT {
-  name?: string | null;
-  email?: string | null;
-  picture?: string | null;
-  sub?: string;
-  iat?: number;
-  exp?: number;
-  jti?: string;
-  role?: string;
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
@@ -46,7 +18,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       user,
       account,
     }: {
-      user: CustomUser;
+      user: User;
       account: Account | null;
     }) {
       const { db } = await connectToDB();
@@ -60,14 +32,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // If no existing user, create a new one
         const role =
           user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user"; // Assign "admin" role to specific email
-        const result = await db.collection("users").insertOne({
-          name: user.name,
-          email: user.email,
-          provider: account?.provider,
-          providerId: account?.providerAccountId,
-          image: user.image,
-          role: role, // Assign role based on email
-        });
+          const result = await db.collection("users").insertOne({
+            name: user.name,
+            email: user.email,
+            provider: account?.provider,
+            providerId: account?.providerAccountId,
+            image: user.image,
+            role: role, // Assign role based on email
+          });
         user.id = result.insertedId.toString(); // Attach the MongoDB _id to the user object
         user.role = role;
       } else {
@@ -131,8 +103,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session,
       token,
     }: {
-      session: CustomSession;
-      token: CustomJwt;
+      session: Session;
+      token: JWT;
     }) {
       if (token?.id) {
         session.user.id = token.id as string; // Safely attach user ID to the session
