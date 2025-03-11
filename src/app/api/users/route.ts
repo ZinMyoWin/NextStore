@@ -40,42 +40,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Connect to the MongoDB database using the connectToDB utility and retrieve the db instance
     const { db } = await connectToDB();
 
-    // Create a URL object from the request URL to parse query parameters
-    const url = new URL(request.url);
-
-    // Get the search parameters (query string) from the URL
-    const searchParams = url.searchParams;
-
-    // Extract the 'role' query parameter (e.g., ?role=admin), default to undefined if not provided
-    const role = searchParams.get("role") || undefined;
-
-    // Initialize an empty object to build the MongoDB query
-    const query: Record<string, any> = {};
-
-    // If a role filter is specified, add it to the query object for filtering users
-    if (role) query.role = role;
 
     // Query the 'users' collection in the database with the constructed query and convert results to an array
-    const users = await db.collection("users").find(query).toArray();
+    const users= await db.collection("users").find().toArray();
 
-    // Transform the raw MongoDB documents into an array of User objects with specified fields
-    const formattedUsers: User[] = users.map((user) => ({
-      name: user.name, // Extract the user's name from the document
-      email: user.email, // Extract the user's email from the document
-      provider: user.provider, // Extract the authentication provider (e.g., Google, GitHub)
-      providerId: user.providerId, // Extract the provider-specific ID for the user
-      image: user.image, // Extract the URL of the user's profile image
-      role: user.role, // Extract the user's role (e.g., admin, user)
-    }));
-
-    // Construct the successful API response object with the formatted user data
-    const response: ApiResponse<User[]> = {
-      success: true, // Indicate the request was successful
-      data: formattedUsers, // Include the list of formatted users as the response data
-    };
+    
 
     // Return the response as JSON with a 200 OK status code
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json(users, { status: 200 });
   } catch (error) {
     // Catch any errors that occur during the execution of the try block
     // Log the error to the console for debugging purposes
