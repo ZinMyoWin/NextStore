@@ -22,7 +22,48 @@ interface DeleteItemsTypes {
   onConfirm?: () => void;
 }
 
-export function ConfirmationAlert({
+export function ProductDeleteConfirmationAlert({
+  setDeleteActive,
+  deleteActive,
+  DeleteActiveIcon,
+  DeleteInactiveIcon,
+  onConfirm,
+}: DeleteItemsTypes) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <div
+          className='cursor-pointer'
+          onMouseEnter={() => setDeleteActive(true)}
+          onMouseLeave={() => setDeleteActive(false)}
+        >
+          <Image
+            src={deleteActive ? DeleteActiveIcon : DeleteInactiveIcon}
+            alt='Delete Icon'
+            className='w-6 h-6'
+          />
+        </div>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete this
+            product from the store.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setDeleteActive(false)}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function UserDeleteConfirmationAlert({
   setDeleteActive,
   deleteActive,
   DeleteActiveIcon,
