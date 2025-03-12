@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { UserDeleteConfirmationAlert } from "../ui/components/AlertDialog";
 
 
 interface User {
@@ -166,12 +167,7 @@ export default function ManageUserPage() {
                         <button className='text-indigo-600 hover:text-indigo-900 mr-4'>
                           Edit
                         </button>
-                        <button
-                          className='text-red-600 hover:text-red-900'
-                          onClick={() => user._id && handleDeleteUser(user._id)}
-                        >
-                          Delete
-                        </button>
+                       <UserDeleteConfirmationAlert onConfirm={()=> handleDeleteUser(user._id)}/>
                       </td>
                     </tr>
                   ))}
