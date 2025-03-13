@@ -172,7 +172,7 @@ export default function Sidebar() {
               </Link>
             </li>
           )}
-          {session?.user && (
+          {session?.user?.role === 'admin' && (
             <li
               className='group px-3'
               onMouseEnter={() => handleMouseEnter("user")}
