@@ -14,62 +14,49 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   debug: true,
   callbacks: {
-    async signIn({
-      user,
-      account,
-    }: {
-      user: User;
-      account: Account | null;
-    }) {
-      const { db } = await connectToDB();
-
-      // Check if the user already exists in the database
-      const existingUser = await db
-        .collection("users")
-        .findOne({ email: user.email });
-
-      if (!existingUser) {
-        // If no existing user, create a new one
-        const role =
-          user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user"; // Assign "admin" role to specific email
+    async signIn({ user, account }: { user: User; account: Account | null }) {
+      try {
+        const { db } = await connectToDB();
+        const existingUser = await db.collection("users").findOne({ email: user.email });
+    
+        if (!existingUser) {
+          const role = user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user";
           const result = await db.collection("users").insertOne({
             name: user.name,
             email: user.email,
             provider: account?.provider,
             providerId: account?.providerAccountId,
             image: user.image,
-            role: role, // Assign role based on email
+            role: role,
           });
-        user.id = result.insertedId.toString(); // Attach the MongoDB _id to the user object
-        user.role = role;
-      } else {
-        // If the user exists but doesn't have a role, assign a default role
-        if (!existingUser.role) {
-          const role =
-            user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user"; // Assign "admin" role to specific email
-          await db.collection("users").updateOne(
-            { _id: existingUser._id },
-            { $set: { role: role } } // Assign role based on email
-          );
-          user.role = role; // Update the user object
+          user.id = result.insertedId.toString();
+          user.role = role;
         } else {
-          console.log("Existing User Role: ", existingUser.role);
-          user.role = existingUser.role; // Use the existing role
-          console.log("Updated User Role: ", existingUser.role);
+          if (!existingUser.role) {
+            const role = user.email === "mgzinmyowin12@gmail.com" ? "admin" : "user";
+            await db.collection("users").updateOne(
+              { _id: existingUser._id },
+              { $set: { role: role } }
+            );
+            user.role = role;
+          } else {
+            user.role = existingUser.role;
+          }
+          user.id = existingUser._id.toString();
         }
-
-        user.id = existingUser._id.toString(); // Use the existing user's _id
+    
+        console.log("User during sign-in:", user);
+        console.log("Account during sign-in:", account);
+    
+        if (existingUser && !existingUser.role) {
+          return false;
+        }
+    
+        return true;
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        return false; // Deny sign-in on error
       }
-
-      console.log("User during sign-in:", user); // Debugging
-      console.log("Account during sign-in:", account); // Debugging
-
-      // Force re-login for users who didn't have a role previously
-      if (!existingUser?.role) {
-        return false; // Prevent sign-in and force re-login
-      }
-
-      return true; // Allow sign-in
     },
     async jwt({ token, user }) {
       const { db } = await connectToDB();
