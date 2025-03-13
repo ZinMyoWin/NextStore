@@ -2,6 +2,7 @@
 
 import { useSidebar } from "@/app/store/use-sidebar";
 import Footer from "@/app/components/Footer";
+import { useState, useEffect } from "react";
 
 export default function MainLayout({
   children,
@@ -9,6 +10,15 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const { isOpen } = useSidebar();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div

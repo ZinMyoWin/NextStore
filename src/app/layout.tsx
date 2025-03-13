@@ -4,6 +4,7 @@ import "./globals.css";
 import Sidebar from "./ui/components/Sidebar";
 import MainLayout from "./ui/components/MainLayout";
 import { Toaster } from "@/components/ui/sonner";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-      <body className={inter.className}>
-        <Sidebar />
-        <MainLayout>{children}</MainLayout>
-        <Toaster />
+    <html lang='en' suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <Sidebar />
+          <MainLayout>{children}</MainLayout>
+          <Toaster />
+        </Suspense>
       </body>
     </html>
   );

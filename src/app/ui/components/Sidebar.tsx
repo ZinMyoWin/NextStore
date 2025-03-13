@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   PanelRight,
   PanelLeftClose,
@@ -10,7 +10,7 @@ import {
   ShoppingCart,
   LogIn,
   LogOut,
-  UserRoundPen 
+  UserRoundPen,
 } from "lucide-react";
 import useCart from "@/app/hooks/useCart";
 import { useSidebar } from "@/app/store/use-sidebar";
@@ -23,13 +23,18 @@ type HoveredIcon =
   | "logout"
   | "login"
   | "dashboard"
-  |"user"
+  | "user"
   | null;
 
 export default function Sidebar() {
   const { session } = useCart();
   const { isOpen, toggle } = useSidebar();
   const [hoveredIcon, setHoveredIcon] = useState<HoveredIcon>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMouseEnter = (iconName: HoveredIcon) => {
     setHoveredIcon(iconName);
@@ -38,6 +43,16 @@ export default function Sidebar() {
   const handleMouseLeave = () => {
     setHoveredIcon(null);
   };
+
+  if (!mounted) {
+    return (
+      <div className='w-20 bg-background text-text h-screen fixed left-0 top-0 border-r border-border flex flex-col transition-all duration-300 ease-in-out z-50'>
+        <div className='h-16 px-4 border-b border-border flex items-center justify-center'>
+          <div className='w-10 h-10 bg-secondary rounded-lg animate-pulse'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -134,7 +149,7 @@ export default function Sidebar() {
               </Link>
             </li>
           )}
-          {session?.user?.role === 'user' && (
+          {session?.user?.role === "user" && (
             <li
               className='group px-3'
               onMouseEnter={() => handleMouseEnter("dashboard")}
@@ -174,9 +189,7 @@ export default function Sidebar() {
                       : "text-muted-foreground"
                   }`}
                 />
-                {isOpen && (
-                  <span className='text-sm font-medium'>Users</span>
-                )}
+                {isOpen && <span className='text-sm font-medium'>Users</span>}
               </Link>
             </li>
           )}
