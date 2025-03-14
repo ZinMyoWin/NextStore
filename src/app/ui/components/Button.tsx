@@ -6,6 +6,7 @@ import Image from "next/image";
 import useCart from "@/app/hooks/useCart";
 import { useContext, useEffect } from "react";
 import { RefreshContext } from "@/app/context/refreshContext";
+import { toast } from "sonner";
 
 export interface cartItemProps {
   productId: string;
@@ -18,6 +19,7 @@ export default function AddToCart({ productId }: cartItemProps) {
   function handleOnClick() {
     if (productIsInCart(productId)) {
       removeFromCart(productId);
+      toast("Product removed from cart.")
     } else {
       checkAuthentication(productId);
     }
