@@ -17,6 +17,7 @@
 import { useEffect, useState } from "react";
 import { Product } from "../product-data";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // Type definitions for user and session
 type User = {
@@ -161,7 +162,10 @@ export default function useCart() {
         setTimeout(() => {
           setIsLoading(false);
         }, 300)
+
       );
+
+      toast("Product added to cart.")
     } else {
       router.push("/auth/signin");
     }
