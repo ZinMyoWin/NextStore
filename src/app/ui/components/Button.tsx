@@ -20,6 +20,7 @@ export default function AddToCart({ productId }: cartItemProps) {
     if (productIsInCart(productId)) {
       removeFromCart(productId);
       toast("Product removed from cart.")
+     
     } else {
       checkAuthentication(productId);
     }
