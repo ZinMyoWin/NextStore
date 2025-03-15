@@ -1,26 +1,16 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import useCart from "@/app/hooks/useCart";
-import Image from "next/image";
+import { signIn } from "next-auth/react"; // Added for Google sign-up
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import Image from "next/image";
+import { FormEvent, useState } from "react";
 
-export default function SignIn() {
-  const { session } = useCart();
+export default function SignUp() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Redirect if authenticated
-  useEffect(() => {
-    if (session) {
-      router.push("/");
-    }
-  }, [session, router]);
-
-  // Handle Credentials form submission
-  const handleCredentialsSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -28,24 +18,32 @@ export default function SignIn() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
+      });
 
-    setLoading(false);
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      router.push("/");
-      window.location.reload(); // Force refresh (optional)
+      const data = await response.json();
+      setLoading(false);
+
+      if (!response.ok) {
+        setError(data.error || "Registration failed");
+      } else {
+        router.push("/signin");
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("An unexpected error occurred");
+      console.error("Signup error:", err);
     }
   };
 
-  // Handle Google sign-in
-  const handleGoogleSignIn = async () => {
+  // Handle Google sign-up (triggers sign-in, auto-registers via callback)
+  const handleGoogleSignUp = async () => {
     setLoading(true);
     setError(null);
     await signIn("google", { callbackUrl: "/" });
@@ -58,16 +56,24 @@ export default function SignIn() {
         {/* Header */}
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-extrabold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            Welcome to NextStore
+            Join NextStore
           </h1>
           <p className="text-muted-foreground text-base">
-            Sign in to explore your account
+            Create an account to get started
           </p>
         </div>
 
-        {/* Credentials Form */}
-        <form onSubmit={handleCredentialsSubmit} className="space-y-5">
+        {/* Sign Up Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-4">
+            <div className="relative">
+              <input
+                name="name"
+                type="text"
+                placeholder="Your Name"
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+              />
+            </div>
             <div className="relative">
               <input
                 name="email"
@@ -97,7 +103,7 @@ export default function SignIn() {
             disabled={loading}
             className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 focus:outline-none transition-all duration-300 disabled:bg-primary/60 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing In..." : "Sign In with Email"}
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
@@ -108,14 +114,14 @@ export default function SignIn() {
           </div>
           <div className="relative flex justify-center text-sm uppercase">
             <span className="bg-card px-3 py-1 text-muted-foreground font-medium rounded-full">
-              Or continue with
+              Or sign up with
             </span>
           </div>
         </div>
 
-        {/* Google Button */}
+        {/* Google Sign-Up */}
         <button
-          onClick={handleGoogleSignIn}
+          onClick={handleGoogleSignUp}
           disabled={loading}
           className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-background border border-border/50 rounded-xl text-foreground font-semibold hover:bg-secondary/20 focus:ring-2 focus:ring-primary/50 focus:outline-none transition-all duration-300 disabled:bg-background/60 disabled:cursor-not-allowed"
         >
@@ -129,20 +135,20 @@ export default function SignIn() {
           {loading ? "Processing..." : "Google Account"}
         </button>
 
-        {/* Sign Up Link */}
+        {/* Sign In Link */}
         <p className="text-center text-sm text-muted-foreground font-medium">
-          Don’t have an account yet?{" "}
+          Have an account?{" "}
           <button
-            onClick={() => router.push("/auth/signup")}
+            onClick={() => router.push("/auth/signin")}
             className="text-primary hover:underline focus:outline-none transition-colors duration-200"
           >
-            Sign Up
+            Sign In
           </button>
         </p>
 
         {/* Footer */}
         <p className="text-center text-sm text-muted-foreground font-medium">
-          By continuing, you agree to our{" "}
+          By signing up, you agree to our{" "}
           <a href="#" className="underline hover:text-primary">
             Terms of Service
           </a>{" "}
