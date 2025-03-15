@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@stripe/stripe-js": "^5.10.0",
     "@types/bcryptjs": "^2.4.6",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
