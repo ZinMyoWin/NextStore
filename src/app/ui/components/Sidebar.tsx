@@ -40,6 +40,10 @@ export default function Sidebar() {
     setHoveredIcon(iconName);
   };
 
+  useEffect(() => {
+    console.log(session);
+  }, [session]);
+
   const handleMouseLeave = () => {
     setHoveredIcon(null);
   };
@@ -172,7 +176,7 @@ export default function Sidebar() {
               </Link>
             </li>
           )}
-          {session?.user?.role === 'admin' && (
+          {session?.user?.role === "admin" && (
             <li
               className='group px-3'
               onMouseEnter={() => handleMouseEnter("user")}
