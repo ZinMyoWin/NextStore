@@ -1,16 +1,30 @@
 "use client";
 
 import { signInWithGoogle } from "@/app/actions";
+import useCart from "@/app/hooks/useCart";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function SignIn() {
+
+
+  const {session} = useCart() 
+
+  const router = useRouter()
+  useEffect(()=>{
+    if(!session?.user){
+      router.push('/')
+    }
+  },[session])
+
   return (
     <div className='flex justify-center items-center min-h-[80vh]'>
       <div className='w-full max-w-md p-8 space-y-8 bg-card rounded-2xl shadow-lg border border-border'>
         {/* Header */}
         <div className='text-center space-y-2'>
           <h1 className='text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent'>
-            Welcome to NexE
+            Welcome to NextStore
           </h1>
           <p className='text-muted-foreground text-sm'>
             Sign in to access your account
