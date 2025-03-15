@@ -1,16 +1,16 @@
 /**
  * Cart Management Hook
- * 
+ *
  * This custom hook manages the shopping cart functionality for the application.
  * It handles user session, cart state, and cart operations.
- * 
+ *
  * Features:
  * - User session management
  * - Cart state management
  * - Add/Remove items from cart
  * - Cart authentication checks
  * - Loading states for operations
- * 
+ *
  * @returns {Object} Cart management functions and state
  */
 
@@ -44,12 +44,12 @@ export default function useCart() {
   useEffect(() => {
     async function fetchUserSession() {
       try {
-        const response = await fetch("/api/auth/session", { 
+        const response = await fetch("/api/auth/session", {
           cache: "no-store",
-          credentials: "include"
+          credentials: "include",
         });
         const data = await response.json();
-        
+
         if (data?.user) {
           setSession(data);
           setUserId(data.user.id);
@@ -75,7 +75,7 @@ export default function useCart() {
         try {
           const response = await fetch(`/api/users/${userId}/cart`, {
             cache: "no-cache",
-            credentials: "include"
+            credentials: "include",
           });
 
           if (!response.ok) {
@@ -117,7 +117,7 @@ export default function useCart() {
         method: "POST",
         body: JSON.stringify({ productId }),
         headers: { "Content-Type": "application/json" },
-        credentials: "include"
+        credentials: "include",
       });
       const updatedCart = await response.json();
       setCart(updatedCart);
@@ -143,7 +143,7 @@ export default function useCart() {
         method: "DELETE",
         body: JSON.stringify({ productId }),
         headers: { "Content-Type": "application/json" },
-        credentials: "include"
+        credentials: "include",
       });
       const updatedCart = await response.json();
       setCart(updatedCart);
@@ -158,15 +158,34 @@ export default function useCart() {
   function checkAuthentication(productId: string) {
     if (session?.user) {
       setIsLoading(true);
-      addToCart(productId).finally(() =>
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 300)
-
-      );
-
-      toast("Product added to cart.")
+      addToCart(productId)
+        .then(() => {
+          toast.success("Product added to cart!", {
+            duration: 3000, // Replaces autoClose
+            position: "top-right",
+            // Optional styling if you're using ShadCN's toast styles
+            style: {
+              border: "1px solid #e5e7eb",
+              padding: "16px",
+              color: "#111827",
+              // fontSize: '14px'
+            },
+          });
+        })
+        .catch((error) => {
+          toast.error(`Failed to add product to cart: ${error.message}`);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 300);
+        });
     } else {
+      toast("Please sign in to add items to cart", {
+        duration: 3000,
+        position: "top-right",
+        icon: "⚠️",
+      });
       router.push("/auth/signin");
     }
   }
