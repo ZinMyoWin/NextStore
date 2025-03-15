@@ -1,5 +1,4 @@
 import ProductsList from "../ui/components/ProductsList";
-import PageTransition from "../ui/animations/pageTransition";
 
 export const dynamic = "force-dynamic";
 
