@@ -13,7 +13,7 @@ export default function SignIn() {
 
   const router = useRouter()
   useEffect(()=>{
-    if(!session?.user){
+    if(session){
       router.push('/')
     }
   },[session])
