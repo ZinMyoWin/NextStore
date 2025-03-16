@@ -10,6 +10,7 @@ interface FormData {
   shortDescription: string;
   price: string;
   image: File | null;
+  quantity: number;
 }
 
 export default function AddProductForm() {
@@ -19,6 +20,7 @@ export default function AddProductForm() {
     shortDescription: "",
     price: "",
     image: null,
+    quantity: 1,
   });
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,6 +30,25 @@ export default function AddProductForm() {
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const num = parseInt(value, 10);
+    if (!isNaN(num) && num >= 0) {
+      setFormData({ ...formData, quantity: num });
+    }
+  };
+
+  const handleIncrement = () => {
+    setFormData((prev) => ({ ...prev, quantity: prev.quantity + 1 }));
+  };
+
+  const handleDecrement = () => {
+    setFormData((prev) => ({
+      ...prev,
+      quantity: Math.max(0, prev.quantity - 1),
+    }));
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +66,6 @@ export default function AddProductForm() {
       return false;
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5MB limit
       toast.error("Image size should be less than 5MB");
       return false;
     }
@@ -69,7 +89,6 @@ export default function AddProductForm() {
       const file = files[0];
       if (validateImageFile(file)) {
         setFormData({ ...formData, image: file });
-        // Update the file input value for consistency
         if (fileInputRef.current) {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(file);
@@ -109,6 +128,7 @@ export default function AddProductForm() {
       formDataToSend.append("productName", formData.productName);
       formDataToSend.append("shortDescription", formData.shortDescription);
       formDataToSend.append("price", formData.price);
+      formDataToSend.append("quantity", formData.quantity.toString());
       formDataToSend.append("image", formData.image);
 
       const response = await fetch("/api/product", {
@@ -121,12 +141,12 @@ export default function AddProductForm() {
         throw new Error(errorData.error || "Failed to create product");
       }
 
-      // Reset form
       setFormData({
         productName: "",
         shortDescription: "",
         price: "",
         image: null,
+        quantity: 1,
       });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -201,9 +221,45 @@ export default function AddProductForm() {
                 onChange={handleInputChange}
                 placeholder='0.00'
                 min={5}
+                max={1000}
                 disabled={isSubmitting}
                 required
               />
+            </div>
+          </div>
+
+          {/* Quantity */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              Quantity
+            </label>
+            <div className='flex items-center space-x-2'>
+              <button
+                type='button'
+                onClick={handleDecrement}
+                disabled={isSubmitting || formData.quantity <= 0}
+                className='inline-flex items-center justify-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                -
+              </button>
+              <input
+                type='number'
+                name='quantity'
+                value={formData.quantity}
+                onChange={handleQuantityChange}
+                className='flex h-10 w-20 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-center'
+                disabled={isSubmitting}
+                min={0}
+                step={1}
+              />
+              <button
+                type='button'
+                onClick={handleIncrement}
+                disabled={isSubmitting}
+                className='inline-flex items-center justify-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                +
+              </button>
             </div>
           </div>
 
