@@ -63,6 +63,7 @@ export async function POST(request: Request) {
       shortDescription,
       price,
       imageUrl: uploadResponse.secure_url,
+      cloudinaryPublicId: uploadResponse.public_id, // Add this line
       thumbnails:
         uploadResponse.eager?.map(
           (t: { secure_url: string }) => t.secure_url
@@ -85,6 +86,7 @@ export async function GET() {
   try {
     const { db } = await connectToDB();
     const products = await db.collection("products").find().toArray();
+    console.log("All Products From: ", products)
     return NextResponse.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
