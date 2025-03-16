@@ -90,7 +90,9 @@ export default function ProductsList() {
         throw new Error("Failed to fetch products");
       }
       const data = await response.json();
+      
       setProducts(data);
+      console.log("Product Data: ", data)
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("Failed to fetch products");
