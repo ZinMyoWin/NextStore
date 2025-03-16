@@ -24,7 +24,10 @@ export async function GET(
     return NextResponse.json(product);
   } catch (error) {
     console.error("Error fetching product:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -46,8 +49,10 @@ export async function DELETE(
 
     if (product.cloudinaryPublicId) {
       await cloudinary.uploader.destroy(product.cloudinaryPublicId);
+      console.log("Image Destroyed!!");
     }
 
+    console.log("Product: ", product);
     await db.collection("products").deleteOne({
       _id: new ObjectId(id),
     });
@@ -55,7 +60,10 @@ export async function DELETE(
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete product" },
+      { status: 500 }
+    );
   }
 }
 
@@ -71,7 +79,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { name, shortDescription, price, imageUrl }: ProductData = await req.json();
+    const { name, shortDescription, price, imageUrl }: ProductData =
+      await req.json();
     const { id } = params;
 
     const { db } = await connectToDB();
@@ -90,11 +99,17 @@ export async function PUT(
     if (imageUrl && imageUrl.startsWith("data:")) {
       const base64Data = imageUrl.split(",")[1];
       if (!base64Data) {
-        return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid image format" },
+          { status: 400 }
+        );
       }
 
       const imageBuffer = Buffer.from(base64Data, "base64");
-      const imageName = `${Date.now()}-${(name || existingProduct.name).replace(/\s+/g, "-")}.webp`;
+      const imageName = `${Date.now()}-${(name || existingProduct.name).replace(
+        /\s+/g,
+        "-"
+      )}.webp`;
       const imageDir = path.join(process.cwd(), "public", "productsImage");
       const imagePath = path.join(imageDir, imageName);
 
@@ -103,7 +118,12 @@ export async function PUT(
 
       updatedImageUrl = imageName;
 
-      const oldImagePath = path.join(process.cwd(), "public", "productsImage", existingProduct.imageUrl);
+      const oldImagePath = path.join(
+        process.cwd(),
+        "public",
+        "productsImage",
+        existingProduct.imageUrl
+      );
       try {
         await fs.access(oldImagePath);
         await fs.unlink(oldImagePath);
@@ -130,6 +150,9 @@ export async function PUT(
     return NextResponse.json({ success: true, product: result });
   } catch (error) {
     console.error("Error updating product:", error);
-    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update product" },
+      { status: 500 }
+    );
   }
 }
