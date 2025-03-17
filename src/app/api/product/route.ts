@@ -25,9 +25,16 @@ export async function POST(request: Request) {
     const productName = formData.get("productName") as string;
     const shortDescription = formData.get("shortDescription") as string;
     const price = parseFloat(formData.get("price") as string);
+    const quantity = parseInt(formData.get("quantity") as string);
 
     // Validate inputs
-    if (!image || !productName || !shortDescription || isNaN(price)) {
+    if (
+      !image ||
+      !productName ||
+      !shortDescription ||
+      isNaN(price) ||
+      isNaN(quantity)
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -62,6 +69,7 @@ export async function POST(request: Request) {
       name: productName,
       shortDescription,
       price,
+      quantity,
       imageUrl: uploadResponse.secure_url,
       cloudinaryPublicId: uploadResponse.public_id, // Add this line
       thumbnails:
@@ -86,7 +94,7 @@ export async function GET() {
   try {
     const { db } = await connectToDB();
     const products = await db.collection("products").find().toArray();
-    console.log("All Products From: ", products)
+    console.log("All Products From: ", products);
     return NextResponse.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
