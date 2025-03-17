@@ -237,7 +237,7 @@ export default function AddProductForm() {
               <button
                 type='button'
                 onClick={handleDecrement}
-                disabled={isSubmitting || formData.quantity <= 0}
+                disabled={isSubmitting || formData.quantity <= 0 }
                 className='inline-flex items-center justify-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed'
               >
                 -
@@ -255,7 +255,7 @@ export default function AddProductForm() {
               <button
                 type='button'
                 onClick={handleIncrement}
-                disabled={isSubmitting}
+                disabled={isSubmitting || formData.quantity >= 1000}
                 className='inline-flex items-center justify-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed'
               >
                 +
