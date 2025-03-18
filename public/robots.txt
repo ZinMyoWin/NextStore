@@ -1,0 +1,22 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Disallow admin and private routes
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow product pages
+Allow: /products/
+Allow: /products/*
+
+# Allow category pages
+Allow: /products?category=*
+
+# Crawl-delay for rate limiting
+Crawl-delay: 10 
