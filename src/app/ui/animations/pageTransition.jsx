@@ -8,7 +8,7 @@ const animation = (variants) => {
     return {
         initial: 'initial',
         animate: 'enter',
-        exit: 'exit', // Fixed typo from 'exist' to 'exit'
+        exit: 'exit', 
         variants
     }
 }

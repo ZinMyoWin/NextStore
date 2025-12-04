@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import useCart from "@/app/hooks/useCart";
 import PageTransition from "../animations/pageTransition";
 import ProductCard from "./ProductCard";
@@ -18,10 +18,10 @@ export default function ShoppingCart() {
   const [cartUpdated, setCartUpdated] = useState(false);
 
   // Calculate cart total
-  const cartTotal = productIncart.reduce(
-    (total, product) => total + product.price,
-    0
-  );
+  const cartTotal = useMemo(() => {
+    return productIncart.reduce((total, product) => total + product.price, 0);
+  }, [productIncart]);
+  
   const shipping = cartTotal > 100 ? 0 : 10;
   const finalTotal = cartTotal + shipping;
 

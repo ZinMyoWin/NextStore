@@ -29,7 +29,7 @@ function Loading() {
 // Success content component
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
+  const sessionId = searchParams?.get("session_id");
 
   useEffect(() => {
     // Clear the cart after successful payment
